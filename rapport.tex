@@ -1,0 +1,121 @@
+\documentclass{article}
+
+% Pour utiliser toues les fonctions du clavier
+\usepackage[utf8]{inputenc} % un package
+\usepackage[T1]{fontenc}      % un second package
+
+% Choix de la langue
+\usepackage[francais]{babel}  % un troisième package
+\setlength{\parindent}{0pt}
+
+% Taille des marges
+\usepackage[top=2.5cm, bottom=2cm, left=2.5cm, right=1.5cm]{geometry}
+
+% Pour l'espace entre les lignes
+\usepackage{setspace}
+% Utilisation:
+% Moyen:
+% \begin{onehalfspace}
+% \end{onehalfspace}
+% Grand:
+% \begin{doublespace}
+% \end{doublespace}
+
+% Changement des polices
+\usepackage{charter}
+
+% Pour afficher du code
+\usepackage{verbatim}
+\usepackage{moreverb}
+
+
+\usepackage{titling}
+\setlength{\droptitle}{-5em}   % This is your set screw
+
+% Version 2
+\usepackage{listings}
+
+% Couleurs
+\usepackage{color}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{colortbl}
+
+\title{Rapport Labo 3}
+\author{\bsc{Bulloni} Lucas \& \bsc{Wermeille} Bastien}
+%\date{10 Novembre 2017}
+
+% En-têtes et pieds de pages
+\usepackage{fancyhdr}
+ 
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\bsc{Bulloni} Lucas \& \bsc{Wermeille} Bastien}
+\lhead{Réseau et application.bib}
+\chead{Rapport Labo 2}
+\cfoot{\thepage}
+
+% Package pour la légende de la table
+\usepackage{caption}
+
+% Package de multi-colonnes
+\usepackage{multicol}
+
+% Package pour les images
+\usepackage{graphicx}
+
+%bibliographie
+\usepackage{csquotes}
+
+
+% Pour les listes
+\usepackage{enumitem}
+\setlist[itemize]{topsep=0pt,after=\newline}
+
+% package pour liens hypertexte
+\usepackage{hyperref}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+	language=Python,
+	aboveskip=3mm,
+	belowskip=3mm,
+	showstringspaces=false,
+	columns=flexible,
+	basicstyle={\small\ttfamily},
+	numbers=none,
+	numberstyle=\tiny\color{gray},
+	keywordstyle=\color{blue},
+	commentstyle=\color{dkgreen},
+	stringstyle=\color{mauve},
+	breaklines=true,
+	breakatwhitespace=true,
+	tabsize=3
+}
+
+\usepackage[backend=biber]{biblatex}
+\addbibresource{biblio.bib}
+
+%\bibliographystyle{plain}
+\bibliography{biblio}
+
+% Début du document
+\begin{document}
+
+\maketitle
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\section{Salut}
+
+\printbibliography
+
+
+\end{document}
+
