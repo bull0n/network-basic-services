@@ -1,0 +1,6 @@
+# MAC address (couche 2) pour l'interface eth0
+ifconfig eth0 hw ether 00:00:00:02:00:00
+
+echo >> /etc/dhcp3/dhclient.conf "send host-name \"$(hostname | sed 's/.*-//')\";"
+
+dhclient eth0

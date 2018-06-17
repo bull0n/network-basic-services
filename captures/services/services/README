@@ -1,0 +1,20 @@
+Voir Labo 5 du polycopié R+A.
+
+L'idée de ce labo est de travailler en deux étapes:
+
+1. construire un sous-réseau IPv4 basé sur des adresses privées,
+   contenant deux clients et un serveur DHCP et DNS, et un
+   serveur Web sur un des clients
+
+2. dupliquer ce sous-réseau IPv4 en 4 instances avec des plages
+   différentes, modifier la configuration des 4 routeurs pour être dans
+   un même backbone et configurer un protocole de routage dynamique
+
+NOTES
+   - le script duplicate-subnet.ch supporte jusqu'à 9 sous-réseaux
+   - il faut démarrer avec lstart -p0 (dépendances entre machines,
+     donc démarrage parallèle nécessaire)
+
+TODO
+   - NTP
+   - avancés: sécurisation échanges NTP et DHCP/DNS

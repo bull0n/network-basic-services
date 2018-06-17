@@ -1,0 +1,33 @@
+$TTL    14400
+@       IN      SOA     dns.mylan.ch. root.mylan.ch. (
+                        2016042602      ; serial
+                        1H              ; refresh
+                        1H              ; retry
+                        1W              ; expiry
+                        1D)             ; minimum
+
+mylan.ch.  14400   IN      NS      dns.mylan.ch.
+
+dns.mylan.ch.      IN      A       192.168.0.1
+
+net1.mylan.ch.	   IN	   NS	   dns.net1.mylan.ch.
+net2.mylan.ch.	   IN	   NS	   dns.net2.mylan.ch.
+net3.mylan.ch.	   IN	   NS	   dns.net3.mylan.ch.
+net4.mylan.ch.	   IN	   NS	   dns.net4.mylan.ch.
+net5.mylan.ch.	   IN	   NS	   dns.net5.mylan.ch.
+net6.mylan.ch.	   IN	   NS	   dns.net6.mylan.ch.
+net7.mylan.ch.	   IN	   NS	   dns.net7.mylan.ch.
+net8.mylan.ch.	   IN	   NS	   dns.net8.mylan.ch.
+net9.mylan.ch.	   IN	   NS	   dns.net9.mylan.ch.
+
+; BUGS
+;    - no reverse zone
+dns.net1.mylan.ch. IN	   A	   192.168.0.1
+dns.net2.mylan.ch. IN	   A	   192.168.0.2
+dns.net3.mylan.ch. IN	   A	   192.168.0.3
+dns.net4.mylan.ch. IN	   A	   192.168.0.4
+dns.net5.mylan.ch. IN	   A	   192.168.0.5
+dns.net6.mylan.ch. IN	   A	   192.168.0.6
+dns.net7.mylan.ch. IN	   A	   192.168.0.7
+dns.net8.mylan.ch. IN	   A	   192.168.0.8
+dns.net9.mylan.ch. IN	   A	   192.168.0.9

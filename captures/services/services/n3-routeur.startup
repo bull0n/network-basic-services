@@ -1,0 +1,146 @@
+# interfaces du routeur
+ifconfig eth0 hw ether 00:00:01:00:00:00
+ifconfig eth1 hw ether 00:00:01:00:00:03
+
+# adresses IP (couche 3) et netmask
+ifconfig eth0 192.168.3.1 255.255.255.0 up
+
+cat > /var/lib/bind/net3.mylan.ch.zone <<"EOF"
+$TTL	14400
+@	IN	SOA	dns.net3.mylan.ch. root.net3.mylan.ch. (
+			2016042601	; serial
+			1H		; refresh
+			1H		; retry
+			1W		; expiry
+			1D)		; minimum
+
+@	IN	NS	dns.net3.mylan.ch.
+
+dns	IN	A	192.168.3.1
+
+@	IN	A	192.168.3.1
+
+pc1	IN	A	192.168.3.42
+www	IN	A	192.168.3.42
+
+@	IN	MX	0	pc1
+@	IN	MX	10	pc2.net3.mylan.ch.
+
+routeur	IN	CNAME	dns
+
+; @@@ COMPLETEZ LA ZONE ICI: il faut au moins
+; un nom et une adresse IP pour le serveur DNS de la
+; zone
+EOF
+
+cat > /var/lib/bind/3.168.192.in-addr.arpa.zone <<"EOF"
+$TTL 14400
+@       IN      SOA     dns.net3.mylan.ch. root.net3.mylan.ch. (
+                        2016042601      ; serial
+                        1H              ; refresh
+                        1H              ; retry
+                        1W              ; expiry
+                        1D)             ; minimum
+
+@	IN 	NS	dns.net3.mylan.ch.
+42	IN	PTR	www.net3.mylan.ch.
+
+; @@@ COMPLETEZ LA ZONE ICI: il faut au moins
+; un nom et une adresse IP pour le serveur DNS de la
+; zone
+EOF
+
+cat >> /etc/bind/named.conf.local <<EOF
+zone "net3.mylan.ch" IN {
+   type master;
+   file "/var/lib/bind/net3.mylan.ch.zone";
+   allow-update { 192.168.3.1; };
+};
+
+zone "3.168.192.in-addr.arpa" IN {
+   type master;
+   file "/var/lib/bind/3.168.192.in-addr.arpa.zone";
+   allow-update { 192.168.3.1; };
+};
+
+zone "net2.mylan.ch" IN {
+  type slave;
+  masters { 192.168.2.1; };
+  file "/var/lib/bind/net2.mylan.ch.slave";
+};
+
+zone "2.168.192.in-addr.arpa" IN {
+   type slave;
+   masters { 192.168.2.1; };
+   file"/var/lib/bind/2.168.192.in-addr.arpa.slave";
+};
+
+EOF
+
+if [ "$(hostname)" = "n1-routeur" ]; then
+   cp /hostlab/{mylan.ch.zone,168.192.in-addr.arpa.zone} /var/lib/bind
+   cat >> /etc/bind/named.conf.local <<EOF
+
+zone "mylan.ch" IN {
+   type master;
+   file "/var/lib/bind/mylan.ch.zone";
+};
+
+zone "168.192.in-addr.arpa" IN {
+   type master;
+   file "/var/lib/bind/168.192.in-addr.arpa.zone";
+};
+EOF
+else
+   ip=192.168
+   ip=${ip}.0.1
+   sed --in-place "/options {/a forwarders { $ip; };" \
+                  /etc/bind/named.conf.options
+fi
+
+cat >> /etc/dhcp3/dhcpd.conf <<EOF
+
+subnet 192.168.3.0 netmask 255.255.255.0 {
+	range 192.168.3.100 192.168.3.199;
+	option routers 192.168.3.1;
+	option broadcast-address 192.168.3.255;
+	option domain-name-servers 192.168.3.1;
+	option domain-name "net3.mylan.ch";
+}
+
+host tournedix {
+	hardware ethernet	00:00:00:01:00:00;
+	fixed-address		192.168.3.42;
+}
+
+# @@@ configurez une zone 192.168.3.0/24 avec
+# les adresses IP dynamiques entre 100 et 199;
+# indiquez également le serveur DNS (nom dans
+# le sous-réseau net3.mylan.ch), le domaine
+# de recherche par défaut, l'adresse IP
+# du routeur, et un lease time de 5 minutes
+
+EOF
+
+# Backbone interface
+ifconfig eth1 192.168.0.3 255.255.255.0 up
+
+# @@@ la configuration et le démarrage de zebra manquent ici
+
+sed --in-place "s/^ripd=no/ripd=yes/" /etc/zebra/daemons
+cat > /etc/zebra/ripd.conf <<EOF
+hostname $(hostname)
+password root
+enable password root
+router rip
+redistribute connected
+network 192.168.0.0/24
+log file /var/log/zebra/ripd.log
+EOF
+
+sed --in-place "s/^ddns-update-style none;/ddns-update-style interim;/" /etc/dhcp3/dhcpd.conf
+
+/etc/init.d/zebra start
+/etc/init.d/bind9 start
+/etc/init.d/dhcp3-server start
+
