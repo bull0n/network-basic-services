@@ -74,15 +74,12 @@
 \usepackage{enumitem}
 \setlist[itemize]{topsep=0pt,after=\newline}
 
-% package pour liens hypertexte
-\usepackage{hyperref}
-
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
 
 \lstset{frame=tb,
-	language=Python,
+	language=bash,
 	aboveskip=3mm,
 	belowskip=3mm,
 	showstringspaces=false,
@@ -98,9 +95,13 @@
 	tabsize=3
 }
 
+%affichage du titre au centre
 \usepackage{titling}
 \renewcommand\maketitlehooka{\null\mbox{}\vfill}
 \renewcommand\maketitlehookd{\vfill\null}
+
+%cache les liens moches
+\usepackage[hidelinks]{hyperref}
 
 \usepackage[backend=biber]{biblatex}
 \addbibresource{biblio.bib}
@@ -120,8 +121,57 @@
 \newpage
 
 \section{Introduction}
+	
+Dans le cadre d'un laboratoire du cours "Réseau et application", les services de base d'un réseau informatiques sont mis en pratiques. Les protocoles testés sont le DHCP, DNS, serveur web et optionnelement le protocole NTP. La partie NTP a été réalisée.
+
+\subsection{Prérequis}
+
+\begin{itemize}
+	\item Un PC Linux avec NetKit
+	\item Laboratoire netkit "qos"
+\end{itemize}
+
+\subsection{Réseau du laboratoire}
+
+\subsubsection{Réseau initial}
+
+Le réseau est composé de deux PC, dont un qui est un serveur web, ainsi qu'un serveur qui fait office de DNS et de DHCP.\\
+
+Le nom du réseau est net1.mylan.ch.\\
+
+[Image sous-réseau]
+
+\subsubsection{Réseau final}
+
+L'objectif final, est de dupliquer le premier réseau 3 fois et d'interconnecter les 4 sous-réseaux.\\
+
+[Image réseau final]
+
 
 \section{Déploiement d'un sous-réseau}
+
+La première étape du laboratoire est la configuration du serveur DNS et DHCP. Toutes les manipulations de configurations ont été faites dans le fichier "n1-router.startup" afin que les modifications soit préservées lors du redémarrage du laboratoire.
+
+
+\subsection{Plage d'adresses dynamiques}
+
+La première étape est la configuration de la plage d'adresse IP dynamique. Toutes les machines configurées avec une adresse IP dynamique prendront une adresse entre 192.168.1.100/24 et 192.168.1.199/24.\\
+
+L'adresse de broadcast est 192.168.1.255 et la passerelle est 192.168.1.1. Nous avons également ajouté le serveur DNS en prévoyance. Le serveur étant la même machine que le DHCP, l'adresse est également 192.168.1.1.\\
+
+\begin{lstlisting}
+subnet 192.168.1.0 netmask 255.255.255.0 {
+	range 192.168.1.100 192.168.1.199;
+	option routers 192.168.1.1;
+	option broadcast-address 192.168.1.255;
+	option domain-name-servers 192.168.1.1;
+	option domain-name "net1.mylan.ch";
+}
+\end{lstlisting}
+
+
+\subsubsection{Adresses statiques}
+
 
 \section{Déploiement de 4 sous-réseaux}
 
