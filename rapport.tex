@@ -183,6 +183,143 @@ PTP est la possibilitée, si les équipements de commutation le supportent (boun
 
 \section{Questions}
 
+\subsection*{1. Quel est le rôle du mot clé authoritative dans la configuration du serveur DHCP ?}
+Dans le cas ou l'on a configuré le sous-réseau ```aa.bb``` dans le DHCP, une requête venant d'un sous-réseau "non identifié" ```aa.bb.cc``` sera ignorée si ce mot clé n'est pas activé, s'il est activé, le serveur répondra avec un NACK
+
+\subsection*{2. Pour quelle raison aurait-on tendance à configurer une durée de bail DHCP courte (p.ex. 1h) ? ou longue ? (p.ex. 1 semaine)}
+\begin{itemize}
+\item bail court: quand il y a beaucoup de clients et pas beaucoup d'adresses ip disponibles dans la plage
+\item bail long: quand il y a des grandes plages d'adresses ip et pas beaucoup de clients
+\end{itemize}
+
+\subsection*{3. Peut-on imaginer un réseau dans lequel aucune adresse de type hard static n’existe ?}
+Non, il faut au moins que le routeur ait une adresse hard static, afin que les différents pérphériques puissent joindre le serveur.
+TODO check
+
+\subsection*{4. Quel est l’avantage de configurer des imprimantes, machines virtuelles ou éventuellement serveurs en adresse de type DHCP static ?}
+Ces périphériques sont toujours sensés être disponibles! Les mettre en adresse dynamique n'apporte rien. Ces périphériques doivent être en adresse statique afin de toujours pouvoir être atteind de la même manière. Certains programme par exemple sauvegardent l'adresse IP de certains serveurs au lieu du nom, ce qui poserait des problèmes peur ceux-ci. La configuration statique permet également de limiter les nombre de requêtes inutiles à chaque changement d'adesse des ces différents serveurs/imprimantes/...
+
+\subsection*{5. Peut-on mettre les plages d’adresses DHCP dynamic là où se trouvent des adresses hard static ?}
+Non, le serveur dhcp risquerait d'allouer dynamiquement une adresse statique déjà allouée. Si nous voulions pouvoir faire cette manipulation qui n'apporte pas grand chose, il faudrait que le serveur DHCP sache que ces adresses sont déjà allouées ce qui revient à modifier la plage d'adresses DHCP disponbible pour allocation.
+
+\subsection*{6. Qu’est-ce que Cisco appelle des manual bindings ?}
+Ce sont des adresses ip (un pool) liés à certaines adresses MAC connues par le serveur DHCP.
+
+TODO completer
+
+\subsection*{7. Expliquez le concept derrière la configuration DNS suivante (faites abtraction du CNAME, mais tenez compte du TTL et du fait qu’il y a 2 champs A différents) :}
+```
+\$ dig -t a www.yahoo.com
+www.yahoo.com.            216   IN    CNAME   fd-fp3.wg1.b.yahoo.c
+fd-fp3.wg1.b.yahoo.com.   38    IN    A       46.228.47.114
+fd-fp3.wg1.b.yahoo.com.   38    IN    A       46.228.47.115
+
+\#lancez plusieurs fois la commande pour voir si quelque chose change
+```
+on a un serveur dupliqué donc deux serveurs à disposition. Celà permet de répartir la charge sur plusieurs serveurs différents et d'avoir de la redondance en cas de panne.
+
+\subsection*{8. Consultez sur un serveur DHCP le fichier ```/var/lib/dhcp/dhcpd.leases``` : que contient-il ? qu’en déduisez-vous sur la volatilité des adresses IP dynamiques ?}
+Contient les bails DHCP. Les adresses IP dynamiques qui ont étées allouées possèdebt une "durée de vie" limité qui expire au bout d'un certain moment. Un fois le bail expiré, celui-ci est supprimé et le périphérique qui possédait e bail doit en redemander un.
+
+\subsection*{9. Capturez et expliquez ce qu’il se passe avec : ```host big-entry.alphanet.ch``` (sur machine réelle, ou ```nslookup```)}
+Il y de nombreuses adresses ip qui s'affichent:
+```
+big-entry.alphanet.ch has address 192.168.24.25
+```
+
+il y a plusieurs serveurs physiques qui répondent à ce nom (plusieurs entrées avec le même nom dans la résolution d'adresses directe DNS)
+
+TODO ...
+
+\subsection*{10. Expliquez la résolution inverse (adresse IP vers nom)}
+Correspond à la résolution inverse, de addresse IP vers nom.
+
+\subsection*{11. Comment un serveur de nom trouve-t-il quels serveurs gèrent la racine ```.``` ?}
+Le nombre de serveurs racines est limité dans le monde et ceux-ci sont codés en dur.
+
+TODO Check
+
+\subsection*{12. A quoi sert l’option DNS (bind/named) ```forwarders``` ?}
+L'option “forwarders” permet de rediriger les requêtes qui ne sont pas résolues par notre serveur vers un serveur DNS distant (serveurs DNS de votre FAI par exemple).
+
+Cela permet d'utiliser le cache d'un serveur déjà existant et donc d'obtenir des temps d'accès plus rapides. Si la requête DNS n'est pas résolue par le serveur DNS “distant” alors la requête sera envoyée aux serveurs DNS racine.
+
+\subsection*{13. Vous modifiez une zone gérée par un master et un slave DNS, que devez-vous absolument changer ?}
+Il est nécessaire de mettre à jour les informations des 2 serveurs DNS, du master et du slave.
+
+\subsection*{14. Que pensez-vous de la sécurité du protocole DNS ? quelles possibilités existent pour l’améliorer ?}
+Ce protocole n'et pas sûre et possède plusieurs problèmes de sécurité tel le "DNS Spoofing", qui permet de rediriger les requêtes vers des "faux sites". Il existe une version sécurisé de ce protocole, DNSSEC qui est comme DNS mais qui inclut du cryptage.
+
+\subsection*{15. Vous venez de configurer deux serveurs DNS pour la zone ```mondomaine.ch```, et ils sont associés à un registrar : expliquez ce que le registry 1 doit faire pour que cela fonctionne, techniquement (indication : ```whois alphanet.ch``` ; de plus, voir les entrées ```NS``` sur ```n1-routeur``` de ```mylan.ch``` vers les sous-domaines)}
+Faire remonter l'existance de ce réseau au DNS supérieur qui s'occupent de la zone.
+
+\subsection*{16. Pourquoi est-ce important d’avoir des champs PTR existants et cohérents ?}
+\begin{itemize}
+\item Faciliter le changemement de configuration
+\item Sécurité
+\end{itemize}
+TODO développer
+
+\subsection*{17. A quoi servent les champs de type SRV ? et TXT ? et NAPTR ? (donnez un exemple pour chacun)}
+\begin{itemize}
+\item SRV : indique quel serveur s'occupe d'un service spécifique : SIP
+\item TXT : texte libre. Exemple: notification de règles SPF (Shortest Path First)
+\item NAPTR : conversion de valeurs. Exemple: n\degre de téléphone en URI SIP
+\end{itemize}
+
+\subsection*{18. A-t-il été nécessaire de changer le protocole DNS pour supporter les domaines accentués, ou seul une modification du client a suffi ? (indication : punycode, exemple : ```linux-neuchâtel.ch``` dans votre navigateur)}
+\begin{itemize}
+\item Aucune modification du DNS
+\item Mais utilisation de punycode
+\end{itemize}
+
+\subsection*{19. A quoi sert le DNSSEC ?}
+Sécuriser le protocole `DNS` avec l'ajout d'un chiffrement des données.
+
+\section{Questions pour le rapport}
+\subsection*{1. Expliquez ce que l’on doit faire sur le maître et le secondaire pour activer un secondaire (slave)}
+Il est nécessaire de référencer le serveur dns slave dans le fichier de configuration du routeur principal et référencer le serveur maitre dans le secondaire.
+
+\subsection*{2. Sécurité d’un serveur de nom}
+Indications,  \url{http://docstore.mik.ua/orelly/networking_2ndEd/dns/ch11_02.htm}
+
+\subsubsection*{(a) Pourquoi les serveurs récursifs sont-ils dangereux ?}
+Car un attaquant peut faire une attaque de type "DNS Spoofing" sans avoir à se trouver dans le réseau. Il peut faire une requête dns au roteur vers site dont il veut détourner le traffic et immédiatement après envoyer des réponses DNS au serveur DNS avec une réponse pour ce site avec l'adresse IP de son site malveillant.
+
+Cela lui permet de faire croire à l'utilisateur qu'il se trouve sur le site qu'il a demandé alors qu'il ne l'est pas.
+
+\subsubsection*{(b) Pourquoi est-ce une bonne pratique de séparer les serveurs autoritaires d’une zone sur Internet d’un serveur récursif pour un sous-réseau ?}
+???
+
+\subsubsection*{(c) Qu’est-ce qu’une attaque de traffic amplification sur le DNS ? comment l’éviter ?}
+Il s'agit d'envoyer des paquets DNS à des serveurs récursifs ouverts avec comme provenance l'adresse du serveur à attaquer. La requête DNS pourrait être \textit{dig ANY isc.org @x.x.x.x}. Cette requête de 64 bytes peut retourner environ 3'223 bytes, ce qui correspond à une multiplication du  traffic(ampification) par 50.\\
+
+Le comble de ce problème et que la requete en question est possible grace au protocole DNSSEC qui est permet d'améliorer a sécurité des réseaux. Cette requête permet de retourner la liste des clés DNSSEC.\\
+
+Une manière d'éviter cette problématique est de fermer l'accès des serveur DNS récursif afin d'empêcher les attaquant de les détourner.\\
+
+Sources:
+\begin{itemize}
+\item \url{https://www2.e-xpertsolutions.com/attention-aux-attaques-dns/}
+\item \url{https://blog.cloudflare.com/65gbps-ddos-no-problem/}
+\item \url{https://blog.cloudflare.com/deep-inside-a-dns-amplification-ddos-attack/}
+\end{itemize}
+
+\subsubsection*{(d) Avancés : évaluez la résistance d’une configuration BIND9 de base face aux attaques de spoofing basées sur le devinage du champ ID de la requête?}
+Indications:
+\begin{itemize}
+\item Est-ce que le numéro de port de la requête est également devinable ? si oui, quel est l’impact sécurité et comment corriger le problème ?
+\item Que peut-il se passer si l’on met un serveur BIND9 avec numéro de port variable et aléatoire derrière un firewall NAT/PAT, comme par exemple un routeur ADSL ?
+\end{itemize}
+
+\subsection*{3. Qu’est-ce que la configuration de views BIND ?}
+
+\subsection*{4. Comparez les protocoles de routage interne OSPF et RIPv2}
+
+\subsection*{5. La délégation de zone inverse est par classe A-C, qui sont obsolètes : des délégations de granularité inférieure à /24 sont aujourd’hui nécessaires : consultez le RFC 2317 pour expliquer la solution moderne}
+
+\subsection*{6. Quand est-ce qu’un CNAME est impossible ? (indication : peut-il coexister avec un même noeud ou une feuille du même niveau) quelles sont les limitations supplémentaires sur CNAME ?}
+
 \section{Conclusion}
 
 \printbibliography
