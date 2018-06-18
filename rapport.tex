@@ -289,14 +289,14 @@ Car un attaquant peut faire une attaque de type "DNS Spoofing" sans avoir à se 
 Cela lui permet de faire croire à l'utilisateur qu'il se trouve sur le site qu'il a demandé alors qu'il ne l'est pas.
 
 \subsubsection*{(b) Pourquoi est-ce une bonne pratique de séparer les serveurs autoritaires d’une zone sur Internet d’un serveur récursif pour un sous-réseau ?}
-???
+Afin que le serveur récursif ne soit accessible que depuis le sous-réseau et pas depuis l'extérieur. Celà permet de limiter les attaques par spoofing.
 
 \subsubsection*{(c) Qu’est-ce qu’une attaque de traffic amplification sur le DNS ? comment l’éviter ?}
 Il s'agit d'envoyer des paquets DNS à des serveurs récursifs ouverts avec comme provenance l'adresse du serveur à attaquer. La requête DNS pourrait être \textit{dig ANY isc.org @x.x.x.x}. Cette requête de 64 bytes peut retourner environ 3'223 bytes, ce qui correspond à une multiplication du  traffic(ampification) par 50.\\
 
-Le comble de ce problème et que la requete en question est possible grace au protocole DNSSEC qui est permet d'améliorer a sécurité des réseaux. Cette requête permet de retourner la liste des clés DNSSEC.\\
+Le comble de ce problème et que la requâte en question est possible grace au protocole DNSSEC qui permet d'améliorer la sécurité des réseaux. Cette requête permet de retourner la liste des clés DNSSEC.\\
 
-Une manière d'éviter cette problématique est de fermer l'accès des serveur DNS récursif afin d'empêcher les attaquant de les détourner.\\
+Une manière d'éviter cette problématique est de fermer l'accès des serveur DNS récursif afin d'empêcher les attaquants de les détourner.\\
 
 Sources:
 \begin{itemize}
@@ -313,13 +313,49 @@ Indications:
 \end{itemize}
 
 \subsection*{3. Qu’est-ce que la configuration de views BIND ?}
+Permets de présenter une configuration du serveurs DNS selon la provenance de la requête. Certains périphériques auront accès à une version et d'autres à une toute autre configuration.\\
+
+Source:
+\begin{itemize}
+\item \url{https://kb.isc.org/article/AA-00851/0/Understanding-views-in-BIND-9-by-example.html}
+\end{itemize}
 
 \subsection*{4. Comparez les protocoles de routage interne OSPF et RIPv2}
+OSPF se base sur la rapidité d'un chemin alors que RIP fonctionne avec les "hop count". OSPF envoie des messages "link-state advertisement" (lsa) qui contient la liste des routeurs atteignable par lui-même à tous ses voisins, propagé ensuite à tous les routeurs du réseau. Cet ensemble de LSA permet de connaitre la structure du réseau. Chaque routeur utililsant finalement l'agorithme de Djikstra afin de trouver le chemin le plus court vers chaque réseau.\\
+
+RIP quand à lui ne prend en compte que le nombre de sauts en chaque chaque routeur. Il envoie des messages tous les 30 secondes à tous ses voinsins avec de leur communiquer la liste des distances qui le sépare des différents réseaux connus. L'avantage de ce protocole est qu'il est simple à mettre en place et supporté par un grand nombre de routeurs. D'un autre côté, celui-ci a une très lente convergence dans de grands réseaux et peut être inefficace dans certaines cas car il ne prend pas en compte la vitesse des lignes.\\
+
+RIP consomme une partie de la bande passante en continue alors que OSPF lui en consomme principalement lors de l'initialisation du réseau, jusqu'à ce que tout soit calculé puis très peu de pacquets sont envoyés par la suite.\\
+
+Sources:
+\begin{itemize}
+\item \url{https://fr.wikipedia.org/wiki/Open_Shortest_Path_First}
+\item \url{https://en.wikipedia.org/wiki/Routing_Information_Protocol}
+\item \url{http://resources.intenseschool.com/rip-vs-ospf-which-is-better-for-your-network/}
+\end{itemize}
 
 \subsection*{5. La délégation de zone inverse est par classe A-C, qui sont obsolètes : des délégations de granularité inférieure à /24 sont aujourd’hui nécessaires : consultez le RFC 2317 pour expliquer la solution moderne}
+La solution "Moderne" consiste a faire déléguer la résolution inverse de ces réseaux par le FAI à notre propre serveur DNS. Pour ce faire, nous allons en collaboration avec le FAI définir un label pour nommer la zone. Le FAI va ainsi déléguer la résolution-inverse pour la zone contenant nos sous-réseaux à notre propre serveur DNS. Le FAI va également créer un CNAME pour chacun de nos sous-réseau.\\
+
+Ainsi, la résolution DNS standard nom vers adresse se sera disponible du côté du FAI et la résolution inverse sera effectué sur notre propre serveur DNS.
+
+Sources:
+\begin{itemize}
+\item \url{https://tools.ietf.org/html/rfc2317}
+\item \url{http://dloads.infoblox.com/direct/kb_attach/1441_Tech_Note_RFC2317.pdf}
+\end{itemize}
 
 \subsection*{6. Quand est-ce qu’un CNAME est impossible ? (indication : peut-il coexister avec un même noeud ou une feuille du même niveau) quelles sont les limitations supplémentaires sur CNAME ?}
+La première limitation est la suivante, un CNAME doit toujours pointer sur un autre nom domaine et jamais sur une adresse. La seconde est qu'aucun autre enregistrement ne doit redéfinir la label du CNAME! Il ne faut pas nom plus utiliser de CNAME pour le racine du domaine mais plutôt utiliser un ALIAS.\\
 
+Un CNAME ne devrait en théorie pas pointer sur un autre CNAME, celà pourrait causer un boucle DNS non résolvable dans le cas ou les deux CNAME se pointent l'un l'autre.\\
+
+Sources:
+\begin{itemize}
+\item \url{https://en.wikipedia.org/wiki/CNAME_record}
+<item \url{https://blog.dnsimple.com/2014/01/why-alias-record/}
+\item \url{http://top100opinions.com/2016/09/usability-and-limitations-of-a-cname-record/}
+\end{itemize}
 \section{Conclusion}
 
 \printbibliography
