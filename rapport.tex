@@ -53,8 +53,8 @@
 \pagestyle{fancy}
 \fancyhf{}
 \rhead{\bsc{Bulloni} Lucas \& \bsc{Wermeille} Bastien}
-\lhead{Réseau et application.bib}
-\chead{Rapport Labo 2}
+\lhead{Réseau et application}
+\chead{Rapport Labo 4}
 \cfoot{\thepage}
 
 % Package pour la légende de la table
@@ -231,6 +231,116 @@ Le serveur web sera accessible avec le nom www et pc1. Deux enregistrement de ty
 pc1	IN	A	192.168.1.42
 www	IN	A	192.168.1.42
 \end{lstlisting}
+
+Il faut également faire la correspondance inverse afin d'y accéder avec l'adresse complète (URL). La configuration est comme ceci : 
+
+\begin{lstlisting}
+42	IN	PTR	www.net1.mylan.ch.
+\end{lstlisting}
+
+\paragraph{Serveur mail}
+
+Il a également fallu configuré une entrée DNS de type MX pour chaque PC mais avec une priorité différente.
+
+\begin{itemize}
+	\item pc1 : Priorité 0
+	\item pc2 : Priorité 10
+\end{itemize}
+
+La configuration est la suivante : 
+
+\begin{lstlisting}
+@	IN	MX	0	pc1
+@	IN	MX	10	pc2.net1.mylan.ch.
+\end{lstlisting}
+
+\subsubsection{Tests}
+
+\paragraph{DHCP Dynamique}
+
+Sur la prise d'écran ci-dessous, on peut remarqué que pc2 a bien pris une adresse dans la plage 192.168.1.100/24 - 192.168.1.199/24. La machine ayant pris l'adresse 192.168.1.101. L'adresse 192.168.1.100 n'a pas été pris car au moment du teste, pc1 était aussi en adresse dynamique.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics{./captures/testpc2-dhcp.png}
+	\caption{Test DHCP dynamique}
+	\label{fig:Test DHCP dynamiqu}
+\end{figure}
+
+\paragraph{DHCP Statique}
+
+On a également testé l'adresse fixe pour pc1. Le tout étant fonctionnel :
+
+\begin{figure}[h]
+	\centering
+	\includegraphics{./captures/7-testfixadress.png}
+	\caption{Test DHCP statique pour pc1}
+	\label{fig:Test DHCP statique pour pc1}
+\end{figure}
+
+Le log du serveur DHCP a également été vérifié afin d'être sûr qu'il n'y ait pas d'erreur.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics{./captures/2-log-dhcp.png}
+	\caption{Log DHCP}
+	\label{fig:Log DHCP}
+\end{figure}
+
+\paragraph{DNS}
+
+Sur l'image ci-dessous on peut voir que les entrées DNS de la zone et que le serveur DNS est bien configuré correctement.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics{./captures/1-testrouteur-dns1-pc2.png}
+	\caption{Test DNS serveur}
+	\label{fig:Test DNS serveur}
+\end{figure}
+
+Et sur l'image suivante que le l'alias pour le routeur est également fonctionnel.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics{./captures/alias-routeur.png}
+	\caption{Test alias}
+	\label{fig:Test alias}
+\end{figure}
+
+Les testes des entrées pour pc1 et pc2 ont également été fait et sont un succès comme on peut le constaté sur l'image ci-dessous.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics{./captures/2-test-dns-pc1.png}
+	\caption{Test entrées DNS pc}
+	\label{fig:Test entrées DNS pc}
+\end{figure}
+
+L'image montre uniquement un test sur pc1 mais un teste à également été fait sur pc2 et produit le même résultat avec les bonnes adresses IP et hostname.
+
+\paragraph{Serveur web}
+
+Le serveur web a été testé avec le commande 'Lynx' comme énoncé dans le document du laboratoire et le test est aussi un succès. \cite{doc-labo}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics{./captures/ItWorks-www.png}
+	\caption{Serveur Web}
+	\label{fig:Serveur Web}
+\end{figure}
+
+\subsubsection{Champs TXT}
+
+Le champ TXT est un simplement des informations textuelles sur le serveur. Ce champ TXT générer automatique contient. \cite{TXT}\\
+
+L'entrée générée ci-dessous contient un hash qui permet de vérifier l'authenticité du DNS.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics{./captures/txt-entry.png}
+	\caption{Entrée TXT}
+	\label{fig:Entrée TXT}
+\end{figure}
 
 \section{Déploiement de 4 sous-réseaux}
 
