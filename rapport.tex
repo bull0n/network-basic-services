@@ -122,7 +122,7 @@
 
 \section{Introduction}
 	
-Dans le cadre d'un laboratoire du cours "Réseau et application", les services de base d'un réseau informatique sont mis en pratiques. Les protocoles testés sont le DHCP, DNS, serveur web et optionnellement le protocole NTP. La partie NTP a été réalisée.
+Dans le cadre d'un laboratoire du cours "Réseau et application", les services de base d'un réseau informatique sont mis en pratiques. Les protocoles à mettre en place sont le DHCP, DNS, serveur web et optionnellement le protocole NTP. La partie NTP a été réalisée. Le but principal est de créer un petit réseau, et ensuite 4 réseaux connectés, composé uniquement de machine GNU/Linux. Tout le laboratoire se fera sur NetKit, simulation d'environnement réseau virtuel.
 
 \subsection{Prérequis}
 
@@ -152,12 +152,17 @@ L'objectif final est de dupliquer le premier réseau 3 fois et d'interconnecter 
 
 La première étape du laboratoire est la configuration du serveur DNS et DHCP. Toutes les manipulations de configurations ont été faites dans le fichier "n1-router.startup" afin que les modifications soient préservées lors du redémarrage du laboratoire.
 
+\subsection{DHCP}
 
-\subsection{Plage d'adresses dynamiques}
+La configuration DHCP se trouvent dans la section du fichier .startup du serveur DHCP/DNS après la ligne : \\
+
+cat >> /etc/dhcp3/dhcpd.conf << EOF
+
+\subsubsection{Plage d'adresses dynamiques}
 
 La première étape est la configuration de la plage d'adresse IP dynamique. Toutes les machines configurées avec une adresse IP dynamique prendront une adresse entre 192.168.1.100/24 et 192.168.1.199/24.\\
 
-L'adresse de broadcast est 192.168.1.255 et la passerelle est 192.168.1.1. Nous avons également ajouté le serveur DNS en prévoyance. Le serveur étant la même machine que le DHCP, l'adresse est également 192.168.1.1.\\
+L'adresse de broadcast est 192.168.1.255 et la passerelle est 192.168.1.1. Nous avons également ajouté le serveur DNS en prévoyance. Le serveur étant la même machine que le DHCP, l'adresse est également 192.168.1.1, de ce fait, le serveur sera en adresse statique.\\
 
 \begin{lstlisting}
 subnet 192.168.1.0 netmask 255.255.255.0 {
@@ -172,6 +177,60 @@ subnet 192.168.1.0 netmask 255.255.255.0 {
 
 \subsubsection{Adresses statiques}
 
+le serveur DNS/DHCP est configuré en IP statique, un serveur DHCP ne peut en effet pas s'attribuer une adresse dynamique. Il faut également faire attention à ne pas mettre une adresse statique dans la plage d'adresse dynamique pour ne pas créer de conflit. La configuration du serveur DHCP est faite dans la définition de la zone de la partie précédente\\
+
+Le serveur web est également configuré avec une adresse IP statique. En effet, un serveur Web ne va que très rarement changer d'adresse IP afin d'éviter des problèmes de mise à jour DNS. Nous avons décidé de donner l'adresse 192.168.1.42 pour ce serveur. La configuration est la suivante : \\
+
+\begin{lstlisting}
+host tournedix {
+	hardware ethernet	00:00:00:01:00:00;
+	fixed-address		192.168.1.42;
+}
+\end{lstlisting}
+
+\subsection{DNS}
+
+La configuration DNS est également faite dans le fichier .startup du serveur.
+
+\subsubsection{Définition de la zone}
+
+Comme énoncé précédemment, la zone (sous-réseau) est composé d'un serveur web et d'un PC simple, et d'un serveur DHCP/DNS. Comme le protocole l'énonce, les entrées DNS sont de type NS, les entrées simples A (pour IPv4), les alias CNAME et les serveurs mails MX. \cite{cours}\\
+
+Certaines entrées doivent être configurées dans les deux sens, du passage de l'hostname à l'adresse IP et de l'adresse IP à l'hostname.\\
+
+la configuration hostname vers adresse ip est faite après la ligne : \\
+'cat > /var/lib/bind/net1.mylan.ch.zone << EOF' \\
+
+Et la configuration hostname vers adresse IP est faite après la ligne :\\
+ 'cat > /var/lib/bind/1.168.192.in-addr.arpa.zone << EOF'
+
+\paragraph{Serveur DNS/DHCP}
+
+Comme énoncé précédemment, le serveur DNS doit être de type NS. Mais cet enregistrement ne permet pas de spécifier son hostname, il faut donc également ajouter une adresse de type A pour pouvoir y accéder via son hostname. Un alias a également été fait pour que la machine puisse être accédé avec le nom 'routeur' et 'dns'.\\
+
+La configuration est donc la suivante : 
+
+\begin{lstlisting}
+@	IN	NS	dns.net1.mylan.ch.
+dns	IN	A	192.168.1.1
+@	IN	A	192.168.1.1
+routeur	IN	CNAME	dns
+\end{lstlisting}
+
+et dans l'autre zone :
+
+\begin{lstlisting}
+@	IN 	NS	dns.net1.mylan.ch.
+\end{lstlisting}
+
+\paragraph{Serveur Web}
+
+Le serveur web sera accessible avec le nom www et pc1. Deux enregistrement de type A ont donc été fait : \\
+
+\begin{lstlisting}
+pc1	IN	A	192.168.1.42
+www	IN	A	192.168.1.42
+\end{lstlisting}
 
 \section{Déploiement de 4 sous-réseaux}
 
@@ -369,6 +428,8 @@ Sources:
 \item \url{http://top100opinions.com/2016/09/usability-and-limitations-of-a-cname-record/}
 \end{itemize}
 \section{Conclusion}
+
+\newpage
 
 \printbibliography
 
