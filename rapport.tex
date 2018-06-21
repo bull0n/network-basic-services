@@ -40,8 +40,8 @@
 \usepackage{colortbl}
 
 \title{%
-	Laboratoires services \\
-	\large Rapport laboratoire 6
+	Laboratoire n\degre 6 Services de bases\\
+	\large Réseau et application
 }
 \author{\bsc{Bulloni} Lucas \& \bsc{Wermeille} Bastien}
 %\date{10 Novembre 2017}
@@ -53,7 +53,7 @@
 \fancyhf{}
 \rhead{\bsc{Bulloni} Lucas \& \bsc{Wermeille} Bastien}
 \lhead{Réseau et application}
-\chead{Rapport Labo 4}
+\chead{Rapport Labo 6}
 \cfoot{\thepage}
 
 % Package pour la légende de la table
@@ -104,8 +104,6 @@
 
 \usepackage[backend=biber]{biblatex}
 \addbibresource{biblio.bib}
-
-%\bibliographystyle{plain}
 \bibliography{biblio}
 
 % Début du document
@@ -121,7 +119,7 @@
 
 \section{Introduction}
 	
-Dans le cadre d'un laboratoire du cours "Réseau et application", les services de base d'un réseau informatique sont mis en pratiques. Les protocoles à mettre en place sont le DHCP, DNS, serveur web et optionnellement le protocole NTP. La partie NTP a été réalisée. Le but principal est de créer un petit réseau avec un DHCP et DNS fonctionnel, ensuite ce réseau va être dupliquer et sera connecté à tout ses clones via un réseau backbone. Toutes les réseaux sont composés uniquement de machine GNU/Linux. Tout le laboratoire se fera sur NetKit, logiciel de simulation d'environnement réseau virtuel.
+Dans le cadre d'un laboratoire du cours "Réseau et application", les services de base d'un réseau informatique sont mis en pratiques. Les protocoles à mettre en place sont le DHCP, DNS, serveur web et optionnellement le protocole NTP. La partie NTP a été réalisée. Le but principal est de créer un petit réseau avec un DHCP et DNS fonctionnel, ensuite ce réseau va être dupliqué et sera connecté à tous ses clones via un réseau backbone. Tous les réseaux sont composés uniquement de machine GNU/Linux. Tout le laboratoire se fera sur NetKit, logiciel de simulation d'environnement réseau virtuel.
 
 \subsection{Prérequis}
 
@@ -133,7 +131,7 @@ Dans le cadre d'un laboratoire du cours "Réseau et application", les services d
 
 \subsubsection{Réseau initial}
 
-Le réseau est composé de deux PC, dont un qui est un serveur web, ainsi qu'un serveur qui fait office de DNS et de DHCP. Les deux PC feront aussi office de serveur mail (uniquement dans les enregistrement DNS).\\
+Le réseau est composé de deux PC, dont un qui est un serveur web, ainsi qu'un serveur qui fait office de DNS et de DHCP. Les deux PC feront aussi office de serveur mail (uniquement dans les enregistrements DNS).\\
 
 Le nom du réseau est net1.mylan.ch.\\
 
@@ -197,7 +195,7 @@ Comme énoncé précédemment, la zone (sous-réseau) est composé d'un serveur 
 
 Certaines entrées doivent être configurées dans les deux sens, du passage de l'hostname à l'adresse IP et de l'adresse IP à l'hostname.\\
 
-la configuration hostname vers adresse ip est faite après la ligne : \\
+la configuration hostname vers adresse IP est faite après la ligne : \\
 'cat > /var/lib/bind/net1.mylan.ch.zone << EOF' \\
 
 Et la configuration hostname vers adresse IP est faite après la ligne :\\
@@ -281,7 +279,6 @@ On a également testé l'adresse fixe pour pc1. Le tout étant fonctionnel :
 
 \clearpage
 
-
 Le log du serveur DHCP a également été vérifié afin d'être sûr qu'il n'y ait pas d'erreur.
 
 \begin{figure}[!h]
@@ -293,7 +290,7 @@ Le log du serveur DHCP a également été vérifié afin d'être sûr qu'il n'y 
 
 \paragraph{DNS}
 
-Sur l'image ci-dessous on peut voir que les entrées DNS de la zone et que le serveur DNS est bien configuré correctement.
+Sur l'image ci-dessous on peut voir que les entrées DNS de la zone et que le serveur DNS est configuré correctement.
 
 \begin{figure}[!h]
 	\centering
@@ -350,17 +347,17 @@ L'entrée générée ci-dessous contient un hash qui permet de vérifier l'authe
 
 \section{Déploiement de 4 sous-réseaux}
 
-L'étape suivante est de dupliquer le sous-réseau 3 fois et de les interconnectés. Les routeurs auront donc deux interfaces. Une pour le réseau internet et une autre pour l'accès aux autres réseaux. Ces interfaces seront d'adresse 192.168.0.X/24.\\
+L'étape suivante est de dupliquer le sous-réseau 3 fois et de les interconnecter. Les routeurs auront donc deux interfaces. Une pour le réseau internet et une autre pour l'accès aux autres réseaux. Ces interfaces seront d'adresse 192.168.0.X/24.\\
 
 \subsection{Backbone}
 
 Le routage entre les différents sous-réseaux est fait avec Zebra, logiciel qui s'occupe de faire du routage TCP/IP \cite{Zebra}. Mais le logiciel semble ne plus être maintenu et a été remplacé/continué sous le nom Quagga, comme on peut le constater dans l'image à la fin de cette section.\\
 
-Afin d'ajouter Zebra à notre réseau, nous avons simplement ajouter la confirmation du document du laboratoire \cite{doc-labo}, celle-ci ne demandant pas d'adaptation.\\
+Afin d'ajouter Zebra à notre réseau, nous avons simplement ajouté la confirmation du document du laboratoire \cite{doc-labo}, celle-ci ne demandant pas d'adaptation.\\
 
-Ensuite le réseau net1 a été dupliqué 3 fois grâce au script 'duplicate-subnet.sh' fournit avec le laboratoire. Nous avons également testé que tous les sous-réseaux fonctionne en faisant simplement des pings entre les machines.
+Ensuite le réseau net1 a été dupliqué 3 fois grâce au script 'duplicate-subnet.sh' fourni avec le laboratoire. Nous avons également testé que tous les sous-réseaux fonctionnent en faisant simplement des pings entre les machines.
 
-Comme énoncé dans le document, on se connectant en SSH à Zebra, on peut voir des routes échangées (celles préfixée par R) et d'autre directe (préfixées par C)
+Comme énoncé dans le document, on se connectant en SSH à Zebra, on peut voir des routes échangées (celles préfixées par R) et d'autre directe (préfixées par C)
 
 \begin{figure}[!h]
 	\centering
@@ -386,7 +383,7 @@ Ensuite nous avons testé en faisant des pings depuis pc1 de net3 à une machine
 
 On peut également voir qu'un ping est fait avec l'adresse IP et un autre avec le hostname. Ce qui valide également le test de fonctionnement DNS.\\
 
-Un traceroute a également été fait de pc1.net1 à pc1.net4. On peut voir que le paquet passe bien par les interfaces réseaux du backbone.
+Un traceroute a également été fait de pc1.net1 à pc1.net4. On peut voir que le paquet passe bien par les interfaces réseau du backbone.
 
 \begin{figure}[!h]
 	\centering
@@ -399,7 +396,7 @@ Un traceroute a également été fait de pc1.net1 à pc1.net4. On peut voir que 
 
 \subsection{Échanges RIP}
 
-Afin d'éviter les boucles de routages, les routeurs communiquent entre eux avec le protocole RIP \cite{RIP}. Nous avons vérifier cela en capturant les paquets RIP. Comme on peut le voir sur l'image ci-dessous :
+Afin d'éviter les boucles de routages, les routeurs communiquent entre eux avec le protocole RIP \cite{RIP}. Nous avons vérifié cela en capturant les paquets RIP. Comme on peut le voir sur l'image ci-dessous :
 
 \begin{figure}[!h]
 	\centering
@@ -415,7 +412,7 @@ Le protocole est RIPv2 est simplement la deuxième amélioration du protocole de
 
 \subsection{DNS Slave}
 
-Un DNS Slave est un DNS qui va baser tout ses enregistrement sur un autre serveur DNS \cite{Slave}. Comme demander dans le document, le DNS du réseau 3 va devenir le DNS slave du réseau 2, qui sera donc son master. Pour cela il faut donc modifier la configuration du DNS du réseau 2 pour lui indiquer qu'il a un slave et également modifier la configuration du réseau 3 pour lui indiquer qu'il a un master.\\
+Un DNS Slave est un DNS qui va baser tous ses enregistrements sur un autre serveur DNS \cite{Slave}. Comme demander dans le document, le DNS du réseau 3 va devenir le DNS slave du réseau 2, qui sera donc son master. Pour cela il faut donc modifier la configuration du DNS du réseau 2 pour lui indiquer qu'il a un slave et également modifier la configuration du réseau 3 pour lui indiquer qu'il a un master.\\
 
 Pour cela il faut premièrement ajouter un enregistrement DNS au réseau 2 pour lui indiquer l'existence du serveur 3.
 
@@ -443,7 +440,7 @@ zone "2.168.192.in-addr.arpa" IN {
 
 \subsubsection{Test}
 
-On a pu testé que le DNS 3 est bien le slave de DNS 2 en faisant la commande : 
+On a pu tester que le DNS 3 est bien le slave de DNS 2 en faisant la commande : 
 
 \begin{lstlisting}
 host -t ns net2.mylan.ch 192.168.0.1
@@ -461,11 +458,11 @@ et en répétant l'opération pour tous les sous-réseaux 192.168.0.X. On peut c
 
 \subsection{NTP}
 
-NTP est un protocole de synchronisation de temps qui permet d'avoir une précision à quelques millisecondes près \cite{NTP}. Nous avons donc testé ce protocole en l'installant sur la machine debian. Le paquet n'étant pas présent dans le laboratoire netkit, nous n'avons pas pu testé tout ce qui était relatif à notre petit sous-réseau.\\
+NTP est un protocole de synchronisation de temps qui permet d'avoir une précision à quelques millisecondes près \cite{NTP}. Nous avons donc testé ce protocole en l'installant sur la machine debian. Le paquet n'étant pas présent dans le laboratoire netkit, nous n'avons pas pu tester tout ce qui était relatif à notre petit sous-réseau.\\
 
 Premièrement, il a fallu installer NTP avec la commande 'apt-get install ntp'.\\
 
-Ensuite il nous avons pu visualiser les strates avec la commande 'ntpq -p'. Les strates sont les serveurs de références sur le quels notre serveur va se synchroniser. Les strates sont organisés sous-forme d'arbre, ayant pour racine une horloge atomique.
+Ensuite il nous avons pu visualiser les strates avec la commande 'ntpq -p'. Les strates sont les serveurs de références sur le quels notre serveur va se synchroniser. Les strates sont organisées sous forme d'arbre, ayant pour racine une horloge atomique.
 
 \begin{figure}[h]
 	\centering
@@ -476,7 +473,7 @@ Ensuite il nous avons pu visualiser les strates avec la commande 'ntpq -p'. Les 
 
 \clearpage
 
-Les paquets de synchronisation ont également été capturés avec wireshark. On peut voir la deuxième prise d'écran les données utiles à l'heure, comme par exemple le délai avec la racine ou l'heure exacte.
+Les paquets de synchronisation ont également été capturés avec wireshark. On peut voir la deuxième prise d'écran les données utiles à l'heure, par exemple le délai avec la racine ou l'heure exacte.
 
 \begin{figure}[h]
 	\centering
@@ -494,7 +491,7 @@ Les paquets de synchronisation ont également été capturés avec wireshark. On
 
 \subsubsection{Amélioration précision NTP} 
 
-Si une précision à la milliseconde n'est pas suffisant, il existe un protocole le protocole PTP qui permet d'atteindre une précision à la nanoseconde \cite{PTP}. Mais ce protocole requiert des appareils le supportant. Car la plupart des machine ne permettent pas d'avoir une telle précision.
+Si une précision à la milliseconde n'est pas suffisante, il existe un protocole le protocole PTP qui permet d'atteindre une précision à la nanoseconde \cite{PTP}. Mais ce protocole requiert des appareils le supportant. Car la plupart des machines ne permettent pas d'avoir une telle précision.
 
 
 \clearpage
@@ -504,7 +501,7 @@ Si une précision à la milliseconde n'est pas suffisant, il existe un protocole
 \subsection*{1. Quel est le rôle du mot clé authoritative dans la configuration du serveur DHCP ?}
 Dans le cas où l'on a configuré le sous-réseau ```aa.bb``` dans le DHCP, une requête venant d'un sous-réseau "non identifié" ```aa.bb.cc``` sera ignorée si ce mot clé n'est pas activé, s'il est activé, le serveur répondra avec un NACK
 
-\subsection*{2. Pour quelle raison aurait-on tendance à configurer une durée de bail DHCP courte (p.ex. 1h) ? ou longue ? (p.ex. 1 semaine)}
+\subsection*{2. Pour quelle raison aurait-on tendance à configurer une durée de bail DHCP courte (p.ex. 1h) ? Ou longue ? (p.ex. 1 semaine)}
 \begin{itemize}
 \item bail court: quand il y a beaucoup de clients et pas beaucoup d'adresses IP disponibles dans la plage
 \item bail long: quand il y a de grandes plages d'adresses IP et pas beaucoup de clients
@@ -591,7 +588,7 @@ Sécuriser le protocole `DNS` avec l'ajout d'un chiffrement des données.
 
 \section{Questions pour le rapport}
 \subsection*{1. Expliquez ce que l’on doit faire sur le maître et le secondaire pour activer un secondaire (slave)}
-La configuration se déroule en 2 étapes. La première consiste a ajouter un enregistrement NS référencant le seuveur DNS esclave sur le serveur maitre. Finalement, il faut ajouter une zone du côté du slave qui référence le serveur avec comme type "slave".
+La configuration se déroule en 2 étapes. La première consiste à ajouter un enregistrement NS référençant le serveur DNS esclave sur le serveur maître. Finalement, il faut ajouter une zone du côté du slave qui référence le serveur avec comme type "slave".
 
 Il s'agit de définir la zone DNS sur le serveur maître en précisant le type master et du côté du serveur DNS esclave, configurer la même zone en précisant l'adresse du serveur maître.
 
