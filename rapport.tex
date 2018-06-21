@@ -118,11 +118,9 @@
 \newpage
 
 \section{Introduction}
-	
-Dans le cadre d'un laboratoire du cours "Réseau et application", les services de base d'un réseau informatique sont mis en pratiques. Les protocoles à mettre en place sont le DHCP, DNS, serveur web et optionnellement le protocole NTP. La partie NTP a été réalisée. Le but principal est de créer un petit réseau avec un DHCP et DNS fonctionnel, ensuite ce réseau va être dupliqué et sera connecté à tous ses clones via un réseau backbone. Tous les réseaux sont composés uniquement de machine GNU/Linux. Tout le laboratoire se fera sur NetKit, logiciel de simulation d'environnement réseau virtuel.
+Le but de ce travail qui se déroule dans le cadre du cours "Réseau et application" est la mise en place de services de base d'un réseau informatique. Les services à déployer sont le DHCP, DNS, serveur web et optionnellement le protocole NTP. La partie NTP a été réalisée. Le but principal est de créer un petit réseau avec un serveur DHCP et DNS fonctionnel, ensuite ce réseau va être dupliqué et sera connecté à tous ses clones via un réseau backbone. Tous les réseaux sont composés uniquement de machine GNU/Linux. Tout le laboratoire se fera sur NetKit, logiciel de simulation d'environnement réseau virtuel.
 
 \subsection{Prérequis}
-
 \begin{itemize}
 	\item Un PC Linux avec NetKit
 	\item Laboratoire netkit "qos"
@@ -130,7 +128,6 @@ Dans le cadre d'un laboratoire du cours "Réseau et application", les services d
 \subsection{Réseau du laboratoire}
 
 \subsubsection{Réseau initial}
-
 Le réseau est composé de deux PC, dont un qui est un serveur web, ainsi qu'un serveur qui fait office de DNS et de DHCP. Les deux PC feront aussi office de serveur mail (uniquement dans les enregistrements DNS).\\
 
 Le nom du réseau est net1.mylan.ch.\\
@@ -138,7 +135,6 @@ Le nom du réseau est net1.mylan.ch.\\
 [Image sous-réseau]
 
 \subsubsection{Réseau final}
-
 L'objectif final est de dupliquer le premier réseau 3 fois et d'interconnecter les 4 sous-réseaux via un backbone pour qu'ils puissent communiquer entre eux.\\
 
 [Image réseau final]
@@ -146,17 +142,14 @@ L'objectif final est de dupliquer le premier réseau 3 fois et d'interconnecter 
 \clearpage
 
 \section{Déploiement d'un sous-réseau}
-
 La première étape du laboratoire est la configuration du serveur DNS et DHCP. Toutes les manipulations de configurations ont été faites dans le fichier "n1-router.startup" afin que les modifications soient préservées lors du redémarrage du laboratoire.
 
 \subsection{DHCP}
-
 La configuration DHCP se trouve dans la section du fichier .startup du serveur DHCP/DNS après la ligne : \\
 
 cat >> /etc/dhcp3/dhcpd.conf << EOF
 
 \subsubsection{Plage d'adresses dynamiques}
-
 La première étape est la configuration de la plage d'adresse IP dynamique. Toutes les machines configurées avec une adresse IP dynamique prendront une adresse entre 192.168.1.100/24 et 192.168.1.199/24.\\
 
 L'adresse de broadcast est 192.168.1.255 et la passerelle est 192.168.1.1. Nous avons également ajouté le serveur DNS en prévoyance. Le serveur étant la même machine que le DHCP, l'adresse est également 192.168.1.1, de ce fait, le serveur sera en adresse statique.\\
@@ -173,7 +166,6 @@ subnet 192.168.1.0 netmask 255.255.255.0 {
 
 
 \subsubsection{Adresses statiques}
-
 le serveur DNS/DHCP est configuré en IP statique, un serveur DHCP ne peut en effet pas s'attribuer une adresse dynamique. Il faut également faire attention à ne pas mettre une adresse statique dans la plage d'adresse dynamique pour ne pas créer de conflit. La configuration du serveur DHCP est faite dans la définition de la zone de la partie précédente.\\
 
 Le serveur web est également configuré avec une adresse IP statique. En effet, un serveur Web ne va que très rarement changer d'adresse IP afin d'éviter des problèmes de mise à jour DNS. Nous avons décidé de donner l'adresse 192.168.1.42 pour ce serveur. La configuration est la suivante : \\
@@ -186,11 +178,9 @@ host tournedix {
 \end{lstlisting}
 
 \subsection{DNS}
-
 La configuration DNS est également faite dans le fichier .startup du serveur.
 
 \subsubsection{Définition de la zone}
-
 Comme énoncé précédemment, la zone (sous-réseau) est composé d'un serveur web et d'un PC simple, et d'un serveur DHCP/DNS. Comme le protocole l'énonce, les entrées DNS sont de type NS, les entrées simples A (pour IPv4), les alias CNAME et les serveurs mails MX. \cite{cours}\\
 
 Certaines entrées doivent être configurées dans les deux sens, du passage de l'hostname à l'adresse IP et de l'adresse IP à l'hostname.\\
@@ -203,7 +193,7 @@ Et la configuration hostname vers adresse IP est faite après la ligne :\\
 
 \paragraph{Serveur DNS/DHCP}
 
-Comme énoncé précédemment, le serveur DNS doit être de type NS. Mais cet enregistrement ne permet pas de spécifier son hostname, il faut donc également ajouter une adresse de type A pour pouvoir y accéder via son hostname. Un alias a également été fait pour que la machine puisse être accédée avec le nom 'routeur' et 'DNS'.\\
+Comme énoncé précédemment, l'enregistrement du serveur DNS doit être de type NS. Mais cet enregistrement ne permet pas de spécifier son hostname, il faut donc également ajouter une adresse de type A pour pouvoir y accéder via son hostname. Un alias a également été fait pour que la machine puisse être accédée avec le nom 'routeur' et 'DNS'.\\
 
 La configuration est donc la suivante : 
 
@@ -229,7 +219,7 @@ pc1	IN	A	192.168.1.42
 www	IN	A	192.168.1.42
 \end{lstlisting}
 
-Il faut également faire la correspondance inverse afin d'y accéder avec l'adresse complète (URL). La configuration est comme ceci : 
+Il faut également faire la correspondance inverse afin d'y accéder avec l'adresse complète (URL). La configuration est la suivante : 
 
 \begin{lstlisting}
 42	IN	PTR	www.net1.mylan.ch.
@@ -237,7 +227,7 @@ Il faut également faire la correspondance inverse afin d'y accéder avec l'adre
 
 \paragraph{Serveur mail}
 
-Il a également fallu configurer une entrée DNS de type MX pour chaque PC, mais avec une priorité différente.
+Il a également fallu configurer une entrée DNS de type MX pour chaque PC qui fait office de serveur mail, mais avec une priorité différente.
 
 \begin{itemize}
 	\item pc1 : Priorité 0
@@ -257,7 +247,7 @@ La configuration est la suivante :
 
 \paragraph{DHCP dynamique}
 
-Sur la prise d'écran ci-dessous, on peut remarqué que pc2 a bien pris une adresse dans la plage 192.168.1.100/24 - 192.168.1.199/24. La machine ayant pris l'adresse 192.168.1.101. L'adresse 192.168.1.100 n'a pas été prise, car au moment du test, pc1 était aussi en adresse dynamique.
+Sur la prise d'écran ci-dessous, on peut remarquer que pc2 a bien pris une adresse dans la plage 192.168.1.100/24 - 192.168.1.199/24. La machine ayant pris l'adresse 192.168.1.101. L'adresse 192.168.1.100 n'a pas été prise, car au moment du test, pc1 était aussi en adresse dynamique.
 
 \begin{figure}[!h]
 	\centering
@@ -299,7 +289,7 @@ Sur l'image ci-dessous on peut voir que les entrées DNS de la zone et que le se
 	\label{fig:Test DNS serveur}
 \end{figure}
 
-Et sur l'image suivante on peut voir que le l'alias pour le routeur est également fonctionnel.
+Et sur l'image suivante, on peut voir que l'alias pour le routeur est également fonctionnel.
 
 \begin{figure}[!h]
 	\centering
@@ -308,7 +298,7 @@ Et sur l'image suivante on peut voir que le l'alias pour le routeur est égaleme
 	\label{fig:Test alias}
 \end{figure}
 
-Les tests des entrées pour pc1 et pc2 ont également été faits et sont un succès comme on peut le constater sur l'image ci-dessous.
+Les tests des entrées pour pc1 et pc2 ont également été faits et ont fonctionné selon notre attente comme on peut le constater sur l'image ci-dessous.
 
 \begin{figure}[!h]
 	\centering
@@ -332,7 +322,7 @@ Le serveur web a été testé avec la commande 'Lynx' comme énoncé dans le doc
 
 \subsubsection{Champs TXT}
 
-Le champ TXT est une simplement des informations textuelles sur le serveur. Ce champ TXT généré automatique contient. \cite{TXT}\\
+Le champ TXT permet de simplement ajouter des informations textuelles sur le serveur. Ce champ TXT généré automatique contient.\cite{TXT}\\
 
 L'entrée générée ci-dessous contient un hash qui permet de vérifier l'authenticité du DNS.
 
@@ -346,18 +336,16 @@ L'entrée générée ci-dessous contient un hash qui permet de vérifier l'authe
 \clearpage
 
 \section{Déploiement de 4 sous-réseaux}
-
-L'étape suivante est de dupliquer le sous-réseau 3 fois et de les interconnecter. Les routeurs auront donc deux interfaces. Une pour le réseau internet et une autre pour l'accès aux autres réseaux. Ces interfaces seront d'adresse 192.168.0.X/24.\\
+L'étape suivante est de dupliquer le sous-réseau 3 fois et de les interconnecter. Les routeurs auront donc deux interfaces. Une pour le réseau internet et une autre pour l'accès aux autres réseaux. Ces interfaces seront dans la plage d'adresse 192.168.0.X/24.\\
 
 \subsection{Backbone}
-
-Le routage entre les différents sous-réseaux est fait avec Zebra, logiciel qui s'occupe de faire du routage TCP/IP \cite{Zebra}. Mais le logiciel semble ne plus être maintenu et a été remplacé/continué sous le nom Quagga, comme on peut le constater dans l'image à la fin de cette section.\\
+Le routage entre les différents sous-réseaux est fait avec GNU Zebra, logiciel qui s'occupe de faire du routage TCP/IP \cite{Zebra}. Mais le logiciel semble ne plus être maintenu et a été remplacé/continué sous le nom Quagga, comme on peut le constater dans l'image à la fin de cette section.\\
 
 Afin d'ajouter Zebra à notre réseau, nous avons simplement ajouté la confirmation du document du laboratoire \cite{doc-labo}, celle-ci ne demandant pas d'adaptation.\\
 
 Ensuite le réseau net1 a été dupliqué 3 fois grâce au script 'duplicate-subnet.sh' fourni avec le laboratoire. Nous avons également testé que tous les sous-réseaux fonctionnent en faisant simplement des pings entre les machines.
 
-Comme énoncé dans le document, on se connectant en SSH à Zebra, on peut voir des routes échangées (celles préfixées par R) et d'autre directe (préfixées par C)
+Comme énoncé dans le document, en se connectant en SSH à un routeur possédant le deamon Zebra de configuré, on peut voir les routes échangées (celles préfixées par R) et d'autres directes (préfixées par C).
 
 \begin{figure}[!h]
 	\centering
@@ -381,9 +369,9 @@ Ensuite nous avons testé en faisant des pings depuis pc1 de net3 à une machine
 	\label{fig:Tests backbone}
 \end{figure}
 
-On peut également voir qu'un ping est fait avec l'adresse IP et un autre avec le hostname. Ce qui valide également le test de fonctionnement DNS.\\
+On peut également voir qu'un ping est fait avec l'adresse IP et un autre avec le hostname. Ce qui valide également le bon fonctionnement du serveur DNS.\\
 
-Un traceroute a également été fait de pc1.net1 à pc1.net4. On peut voir que le paquet passe bien par les interfaces réseau du backbone.
+Un traceroute a également été réalisé de pc1.net1 à pc1.net4. On peut voir que le paquet passe bien par les interfaces réseau du backbone.
 
 \begin{figure}[!h]
 	\centering
@@ -405,14 +393,15 @@ Afin d'éviter les boucles de routages, les routeurs communiquent entre eux avec
 	\label{fig:RIP}
 \end{figure}
 
-Le protocole est RIPv2 est simplement la deuxième amélioration du protocole de base.
+Le protocole est RIPv2 est simplement la deuxième version du protocole de base et a été développée en 1993\cite{RIP}.
 
 \clearpage
 \section{Autres services}
 
-\subsection{DNS Slave}
+\subsection{DNS Slave\label{dns-slave}}
+Un DNS Slave est un DNS qui va baser tous ses enregistrements sur un autre serveur DNS\cite{Slave}. Comme demandé dans le document, le DNS du réseau 3 va devenir le DNS slave du réseau 2, qui sera donc son master. Pour cela, il faut modifier la configuration DNS du réseau 2 pour lui indiquer qu'il a un serveur slave et également modifier la configuration du réseau 3 afin de lui indiquer qu'il a un master.\\
 
-Un DNS Slave est un DNS qui va baser tous ses enregistrements sur un autre serveur DNS \cite{Slave}. Comme demander dans le document, le DNS du réseau 3 va devenir le DNS slave du réseau 2, qui sera donc son master. Pour cela il faut donc modifier la configuration du DNS du réseau 2 pour lui indiquer qu'il a un slave et également modifier la configuration du réseau 3 pour lui indiquer qu'il a un master.\\
+{\color{red}\textbf{TODO Ce que j'ai compris c'est que le serveur 3 devient un slave uniquement pour la zone du serveur 2 mais reste le master pour sa zone.}}
 
 Pour cela il faut premièrement ajouter un enregistrement DNS au réseau 2 pour lui indiquer l'existence du serveur 3.
 
@@ -422,7 +411,7 @@ dns	IN	A	192.168.3.1
 @	IN	NS	dns.net3.mylan.ch
 \end{lstlisting}
 
-Ensuite il faut indiquer au serveur 3 qu'il est un slave en ajoutant ces lignes après la ligne 'cat >> /etc/bind/named.conf.local <<EOF' : 
+Ensuite, il faut indiquer au serveur 3 qu'il est un slave en ajoutant ces lignes après la ligne 'cat >> /etc/bind/named.conf.local <<EOF' : 
 
 \begin{lstlisting}
 zone "net2.mylan.ch" IN {
@@ -457,12 +446,11 @@ et en répétant l'opération pour tous les sous-réseaux 192.168.0.X. On peut c
 
 
 \subsection{NTP}
-
-NTP est un protocole de synchronisation de temps qui permet d'avoir une précision à quelques millisecondes près \cite{NTP}. Nous avons donc testé ce protocole en l'installant sur la machine debian. Le paquet n'étant pas présent dans le laboratoire netkit, nous n'avons pas pu tester tout ce qui était relatif à notre petit sous-réseau.\\
+NTP est un protocole de synchronisation de temps qui permet d'avoir une précision à quelques millisecondes près \cite{NTP}. Nous avons testé ce protocole en l'installant sur la machine Debian. Le paquet n'étant pas présent dans le laboratoire netkit, nous n'avons pas pu tester NTP dans le cadre de notre petit sous-réseau NetKit.\\
 
 Premièrement, il a fallu installer NTP avec la commande 'apt-get install ntp'.\\
 
-Ensuite il nous avons pu visualiser les strates avec la commande 'ntpq -p'. Les strates sont les serveurs de références sur le quels notre serveur va se synchroniser. Les strates sont organisées sous forme d'arbre, ayant pour racine une horloge atomique.
+Ensuite, nous avons pu visualiser les strates avec la commande 'ntpq -p'. Les strates sont les serveurs de références sur lesquels notre serveur va se synchroniser. Les strates sont organisées sous forme d'arbre, ayant pour racine une horloge atomique.
 
 \begin{figure}[h]
 	\centering
@@ -473,7 +461,7 @@ Ensuite il nous avons pu visualiser les strates avec la commande 'ntpq -p'. Les 
 
 \clearpage
 
-Les paquets de synchronisation ont également été capturés avec wireshark. On peut voir la deuxième prise d'écran les données utiles à l'heure, par exemple le délai avec la racine ou l'heure exacte.
+Les paquets de synchronisation ont également été capturés avec wireshark. On peut voir sur la deuxième prise d'écran les données utiles à l'heure, par exemple le délai avec la racine ou l'heure exacte.
 
 \begin{figure}[h]
 	\centering
@@ -490,37 +478,32 @@ Les paquets de synchronisation ont également été capturés avec wireshark. On
 \end{figure}
 
 \subsubsection{Amélioration précision NTP} 
-
-Si une précision à la milliseconde n'est pas suffisante, il existe un protocole le protocole PTP qui permet d'atteindre une précision à la nanoseconde \cite{PTP}. Mais ce protocole requiert des appareils le supportant. Car la plupart des machines ne permettent pas d'avoir une telle précision.
-
+Si une précision à la milliseconde n'est pas suffisante, il existe un protocole le protocole PTP qui permet d'atteindre une précision à la nanoseconde \cite{PTP}. Mais ce protocole requiert des appareils le supportant, car la plupart des machines ne permettent pas d'avoir une telle précision. Ces appareils qui veulent supporter ce protocole doivent être capables de déterminer le temps dont ils ont besoin pour faire transiter les paquets.
 
 \clearpage
 
 \section{Questions}
 
 \subsection*{1. Quel est le rôle du mot clé authoritative dans la configuration du serveur DHCP ?}
-Dans le cas où l'on a configuré le sous-réseau ```aa.bb``` dans le DHCP, une requête venant d'un sous-réseau "non identifié" ```aa.bb.cc``` sera ignorée si ce mot clé n'est pas activé, s'il est activé, le serveur répondra avec un NACK
+Le mot clé "Authoritative" va jouer un rôle lorsque le serveur recevra une requête auquel il ne peut répondre positivement par exemple une requête "DHCP Request" pour une addresse IP non disponible dans les adresses qu'il peut allouer. Dans le cas ou "Authoritative" est activé alors le serveur répondra avec un NACK. Dans l'autre cas le serveur ne répondra tout simplement pas, en assumant qu'un autre serveur autoritaire va répondre.\cite{authoritative}\\
 
 \subsection*{2. Pour quelle raison aurait-on tendance à configurer une durée de bail DHCP courte (p.ex. 1h) ? Ou longue ? (p.ex. 1 semaine)}
 \begin{itemize}
-\item bail court: quand il y a beaucoup de clients et pas beaucoup d'adresses IP disponibles dans la plage
-\item bail long: quand il y a de grandes plages d'adresses IP et pas beaucoup de clients
+\item Bail court: quand il y a beaucoup de clients et peu d'adresses IP disponibles dans la plage. Cela permet d'éviter que certaines adresses IP soient inutilisables et que certains clients ne puissent en obtenir.
+\item Bail long: quand il y a de grandes plages d'adresses IP et peu de clients. On peut se permettre de laisser les adresses IP plus longtemps vu qu'on en a suffisamment en réserve.
 \end{itemize}
 
 \subsection*{3. Peut-on imaginer un réseau dans lequel aucune adresse de type hard static n’existe ?}
-Non, il faut au moins que le routeur ait une adresse hard static, afin que les différents périphériques puissent joindre le serveur.
-TODO check
+Non, il faut au moins que le routeur ait une adresse hard static, afin que les différents périphériques puissent joindre le serveur. D'autres serveurs tels que le DHCP, DNS, Mail et Web devraient être également configurés avec une adresse IP statique afin qu'ils puissent être accessibles directement depuis leurs adresses IP sans devoir passer par le DNS.
 
 \subsection*{4. Quel est l’avantage de configurer des imprimantes, machines virtuelles ou éventuellement serveurs en adresse de type DHCP static ?}
-Ces périphériques sont toujours censés être disponibles! Les mettre en adresse dynamique n'apporte rien. Ces périphériques doivent être en adresse statique afin de toujours pouvoir être atteint de la même manière. Certains programmes par exemple sauvegardent l'adresse IP de certains serveurs au lieu du nom, ce qui poserait des problèmes peur ceux-ci. La configuration statique permet également de limiter le nombre de requêtes inutiles à chaque changement d'adresse des ces différents serveurs/imprimantes/...
+Ces périphériques sont toujours censés être disponibles! Les mettre en adresse dynamique n'apporte rien. Ces périphériques doivent être en adresse statique afin de toujours pouvoir être atteint de la même manière. Certains programmes par exemple sauvegardent l'adresse IP de certains serveurs au lieu du nom, ce qui poserait des problèmes pour ceux-ci. La configuration statique permet également de limiter le nombre de requêtes inutiles à chaque changement d'adresse pour ces différents serveurs/imprimantes/...
 
 \subsection*{5. Peut-on mettre les plages d’adresses DHCP dynamiques là où se trouvent des adresses hard static ?}
 Non, le serveur DHCP risquerait d'allouer dynamiquement une adresse statique déjà allouée. Si nous voulions pouvoir faire cette manipulation qui n'apporte pas grand-chose, il faudrait que le serveur DHCP sache que ces adresses sont déjà allouées ce qui revient à modifier la plage d'adresses DHCP disponible pour allocation.
 
 \subsection*{6. Qu’est-ce que Cisco appelle des manual bindings ?}
-Ce sont des adresses IP (un pool) liées à certaines adresses MAC connues par le serveur DHCP.
-
-TODO completer
+Ce sont des adresses IP (un pool) liées à certaines adresses MAC connues par le serveur DHCP\cite{manual-bindings}.Chaque "manual binding" possédera son propre pool d'adresse qui ne pourra être utilisé que par lui-même. Deux "Manual Binding" ne peuvent pas se partager le même pool.
 
 \subsection*{7. Expliquez le concept derrière la configuration DNS suivante (faites abstraction du CNAME, mais tenez compte du TTL et du fait qu’il y a 2 champs A différents) :}
 ```
@@ -528,48 +511,58 @@ TODO completer
 www.yahoo.com.            216   IN    CNAME   fd-fp3.wg1.b.yahoo.c
 fd-fp3.wg1.b.yahoo.com.   38    IN    A       46.228.47.114
 fd-fp3.wg1.b.yahoo.com.   38    IN    A       46.228.47.115
-
-\#lancez plusieurs fois la commande pour voir si quelque chose change
 ```
-on a un serveur dupliqué donc deux serveurs à disposition. Cela permet de répartir la charge sur plusieurs serveurs différents et d'avoir de la redondance en cas de panne.
+On a un serveur dupliqué, c'est-à-dire qu'il y a deux serveurs pour répondre aux requêtes sur le nom de domaine "fd-fp3.wg1.b.yahoo.com.". Cela permet de répartir la charge sur plusieurs serveurs différents et d'avoir de la redondance en cas de panne.
 
 \subsection*{8. Consultez sur un serveur DHCP le fichier ```/var/lib/DHCP/dhcpd.leases``` : que contient-il ? qu’en déduisez-vous sur la volatilité des adresses IP dynamiques ?}
-Contiens les bails DHCP. Les adresses IP dynamiques qui ont été allouées possèdent une "durée de vie" limitée qui expire au bout d'un certain moment. Une fois le bail expiré, celui-ci est supprimé et le périphérique qui possédait e bail doit en redemander un.
+Contiens les baux DHCP. Les adresses IP dynamiques qui ont été allouées possèdent une "durée de vie" limitée qui expire au bout d'un certain moment. Une fois la moitié du bail passé, le client recommence généralement a faire une demande de renouvellement de bail. Lorsque le bail arrive à expiration et que le client n'a pas demandé de renouvellement, alors celui-ci est supprimé et le périphérique qui possédait le bail doit en redemander un.
 
 \subsection*{9. Capturez et expliquez ce qui se passe avec : ```host big-entry.alphanet.ch``` (sur machine réelle, ou ```nslookup```)}
-Il y de nombreuses adresses IP qui s'affichent:
-```
-big-entry.alphanet.ch has address 192.168.24.25
-```
+Il y de nombreuses adresses IP qui s'affichent, la capture ci-dessous a été rognée, il y avait 50 entrées:
 
-il y a plusieurs serveurs physiques qui répondent à ce nom (plusieurs entrées avec le même nom dans la résolution d'adresses directe DNS)
+\begin{figure}[h]
+	\centering
+	\includegraphics{./captures/big-entry.png}
+	\caption{big-entry}
+	\label{fig:Strates}
+\end{figure}
 
-TODO ...
+Il y a plusieurs serveurs physiques qui répondent à ce nom (plusieurs entrées avec le même nom dans la résolution d'adresses directe DNS). Cette configuration permet la charge du traffic sur plusieurs serveurs. Dans le cas ou j'effectue plusieurs pings sur ce nom de domaine, j'obtiens à chaque fois une adresse différente.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics{./captures/ping-bigentry.png}
+	\caption{big-entry ping}
+	\label{fig:Strates}
+\end{figure}
+\clearpage
 
 \subsection*{10. Expliquez la résolution inverse (adresse IP vers nom)}
-La résolution inverse permet de récupérer le Fully qualified domain name (FQDN) à partir d'une adresse IP. Le FQDN est le nom de domaine qualifié qui correspond au nom de domaine épelé sans abréviation, y compris le potentiel sous-domaine, le nom de domaine et l'extension du nom de domaine. Par exemple:
+La résolution inverse permet de récupérer le "Fully qualified domain name" (FQDN) à partir d'une adresse IP. Le FQDN est le nom de domaine qualifié qui correspond au nom de domaine épelé sans abréviation, y compris le potentiel sous-domaine, le nom de domaine et l'extension du nom de domaine. Par exemple:
 \textit{www.domaine.ch.}
 
 \subsection*{11. Comment un serveur de nom trouve-t-il quels serveurs gèrent la racine ```.``` ?}
-Le nombre de serveurs racines est limité dans le monde et ceux-ci sont accessibles publiquement.
+Le nombre de serveurs racines est limité dans le monde et ceux-ci sont configurés dans le fichier "/etc/bind/db.root" pour un serveur ayant bind d'installé. La liste des serveurs racines est librement accessible sur internet.
 
 \subsection*{12. A quoi sert l’option DNS (bind/named) ```forwarders``` ?}
-L'option “forwarders” permet de rediriger les requêtes qui ne sont pas résolues par notre serveur vers un serveur DNS distant (serveurs DNS de votre FAI par exemple).
+L'option “forwarders” permet de rediriger les requêtes qui ne sont pas résolues par notre serveur vers un serveur DNS distant (serveurs DNS de votre FAI par exemple)\cite{dns-forwarding}.
 
 Cela permet d'utiliser le cache d'un serveur déjà existant et donc d'obtenir des temps d'accès plus rapides. Si la requête DNS n'est pas résolue par le serveur DNS “distant” alors la requête sera envoyée aux serveurs DNS racine.
 
 \subsection*{13. Vous modifiez une zone gérée par un master et un slave DNS, que devez-vous absolument changer ?}
-Il est nécessaire de mettre à jour les informations des 2 serveurs DNS, du master et du slave.
+Il est nécessaire de mettre à jour les informations des 2 serveurs DNS, du master et du slave. Voir la première question du point \ref{question-slave} pour la théorie et le point \ref{dns-slave} pour la mise en pratique.
 
 \subsection*{14. Que pensez-vous de la sécurité du protocole DNS ? Quelles possibilités existent pour l’améliorer ?}
-Ce protocole n'est pas sûr et possède plusieurs problèmes de sécurité tel le "DNS Spoofing" ou "DNS cache Poisoning", qui consiste a insérer de faux enregistrements DNS dans le serveur afin que celui-ci retourne une réponse erronée au client qui va se retrouver sur le mauvais site. Il existe une version sécurisée de ce protocole, DNSSEC qui est comme DNS, mais qui inclut du cryptage.
+Ce protocole n'est pas sûr et possède plusieurs problèmes de sécurité tel le "DNS Spoofing" ou "DNS cache Poisoning", qui consiste a insérer de faux enregistrements DNS dans le serveur afin que celui-ci retourne une réponse erronée au client qui va se retrouver sur le mauvais site.\cite{attaques}\\
+
+Il existe une version sécurisée de ce protocole, DNSSEC qui est comme DNS, mais qui inclut du cryptage afin de valider l'authenticité des messages reçus. Cependant ce protocole ne permet pas de gérer la confidentialité.\cite{DNSSEC}
 
 \subsection*{15. Vous venez de configurer deux serveurs DNS pour la zone ```mondomaine.ch```, et ils sont associés à un registrar : expliquez ce que le registry 1 doit faire pour que cela fonctionne, techniquement (indication : ```whois alphanet.ch``` ; de plus, voir les entrées ```NS``` sur ```n1-routeur``` de ```mylan.ch``` vers les sous-domaines)}
-Faire remonter l'existence de ce réseau au DNS supérieur qui s'occupe de la zone.
+Définir les enregistrements DNS pour les serveurs qui en ont besoin tel que le serveur mail. Il s'agit de configurer des enregistrements de type A pour faire correspondre les hostname avec l'adresse IP et également des "PTR" afin de faire la conversion inverse(très important pour le serveur mail).
 
 \subsection*{16. Pourquoi est-ce important d’avoir des champs PTR existants et cohérents ?}
 Les champs PTR permettent d'associer une adresse IP à un nom d'hôte. Un PTR correspond à un enregistrement inversé. Les champs PTR sont indispensables pour les serveurs de messageries par exemple.
-Les serveurs de messageries contrôlent que l'adresse IP correspond au nom du serveur source. Dans le ou le PTR n'est pas configuré alors la vérification ne fonctionne pas et l'email est rejeté.
+Les serveurs de messageries contrôlent que l'adresse IP correspond au nom du serveur source. Dans le cas où le PTR n'est pas configuré alors la vérification ne fonctionne pas et l'email est rejeté.
 
 \subsection*{17. A quoi servent les champs de type SRV ? et TXT ? et NAPTR ? (donnez un exemple pour chacun)}
 \begin{itemize}
@@ -579,24 +572,24 @@ Les serveurs de messageries contrôlent que l'adresse IP correspond au nom du se
 \end{itemize}
 
 \subsection*{18. A-t-il été nécessaire de changer le protocole DNS pour supporter les domaines accentués, où seule une modification du client a suffi ? (indication : punycode, exemple : ```linux-neuchâtel.ch``` dans votre navigateur)}
-Non, il n'a pas été nécessaire de modifier le protocole DNS du côté du serveur. Nous utilisons à la place le punycode qui est une syntaxe de codage qui est utilisée avec les noms de domaines internationaux.
+Non, il n'a pas été nécessaire de modifier le protocole DNS du côté du serveur. Nous utilisons à la place le punycode qui est une syntaxe de codage qui est utilisée avec les noms de domaines internationaux. Tout le travail se fait du côté du client et rein n'a dû être changé du côté du serveur.
 
 \subsection*{19. A quoi sert le DNSSEC ?}
-Sécuriser le protocole `DNS` avec l'ajout d'un chiffrement des données.
-
-
+Le DNSSEC est une version améliorée du protocole `DNS` qui permet d'authentifier les enregistrements DNS et ainsi d'établir une chaîne de confiance.\cite{DNSSEC}
 
 \section{Questions pour le rapport}
-\subsection*{1. Expliquez ce que l’on doit faire sur le maître et le secondaire pour activer un secondaire (slave)}
-La configuration se déroule en 2 étapes. La première consiste à ajouter un enregistrement NS référençant le serveur DNS esclave sur le serveur maître. Finalement, il faut ajouter une zone du côté du slave qui référence le serveur avec comme type "slave".
+\subsection*{1. Expliquez ce que l’on doit faire sur le maître et le secondaire pour activer un secondaire (slave)\label{question-slave}}
+La configuration se déroule en 2 étapes. La première consiste à ajouter un enregistrement NS référençant le serveur DNS esclave sur le serveur maître. Finalement, il faut ajouter une zone du côté du slave qui référence le serveur avec comme type "slave".\\
 
-Il s'agit de définir la zone DNS sur le serveur maître en précisant le type master et du côté du serveur DNS esclave, configurer la même zone en précisant l'adresse du serveur maître.
+Il s'agit de définir la zone DNS sur le serveur maître en précisant le type master et du côté du serveur DNS esclave, configurer la même zone en précisant l'adresse du serveur maître.\\
+
+Nous avons effectué ces manipulations dans le point \ref{dns-slave}.
 
 \subsection*{2. Sécurité d’un serveur de nom}
 Indications,  \url{http://docstore.mik.ua/orelly/networking_2ndEd/dns/ch11_02.htm}
 
 \subsubsection*{(a) Pourquoi les serveurs récursifs sont-ils dangereux ?}
-Car un attaquant peut faire une attaque de type "DNS Spoofing" sans avoir à se trouver dans le réseau. Il peut faire une requête DNS au roteur vers site dont il veut détourner le trafic et immédiatement après envoyer des réponses DNS au serveur DNS avec une réponse pour ce site avec l'adresse IP de son site malveillant.\\
+Car un attaquant peut faire une attaque de type "DNS Spoofing" sans avoir à se trouver dans le réseau. Il peut faire une requête DNS au roteur vers site dont il veut détourner le trafic et immédiatement après envoyer des réponses DNS au serveur DNS avec une réponse pour ce site avec l'adresse IP de son site malveillant.\cite{attaques}\\
 
 Cela lui permet de faire croire à l'utilisateur qu'il se trouve sur le site qu'il a demandé alors qu'il ne l'est pas.
 
@@ -604,7 +597,7 @@ Cela lui permet de faire croire à l'utilisateur qu'il se trouve sur le site qu'
 Afin que le serveur récursif ne soit accessible que depuis le sous-réseau et pas depuis l'extérieur. Cela permet de limiter les attaques par spoofing.
 
 \subsubsection*{(c) Qu’est-ce qu’une attaque de trafic amplification sur le DNS ? Comment l’éviter ?}
-Il s'agit d'envoyer des paquets DNS à des serveurs récursifs ouverts avec comme provenance l'adresse du serveur à attaquer. La requête DNS pourrait être \textit{dig ANY isc.org @x.x.x.x}. Cette requête de 64 bytes peut retourner environ 3'223 bytes, ce qui correspond à une multiplication du  trafic(amplification) par 50.\cite{DDOS}\cite{amplification}\cite{attaques}\\
+Il s'agit d'envoyer des paquets DNS à des serveurs récursifs ouverts avec comme provenance l'adresse du serveur à attaquer. La requête DNS pourrait être \textit{dig ANY isc.org @x.x.x.x}. Cette requête de 64 bytes peut retourner environ 3'223 bytes, ce qui correspond à une multiplication du  trafic(amplification) par 50.\cite{DDOS}\cite{amplification}\\
 
 Le comble de ce problème et que la requête en question est possible grave au protocole DNSSEC qui permet d'améliorer la sécurité des réseaux. Cette requête permet de retourner la liste des clés DNSSEC.\\
 
@@ -617,11 +610,12 @@ Indications:
 \item Que peut-il se passer si l’on met un serveur BIND9 avec numéro de port variable et aléatoire derrière un firewall NAT/PAT, par exemple un routeur ADSL ?
 \end{itemize}
 
-Oui, le port de la requête est devinable, 
-TODO\\
+Oui, le port par défaut est le port 53. Il est ainsi très facile pour un hacker d'essayer d'envoyer de fausses requêtes ou réponses DNS sur ce port. Il faudra dès lors ouvrir les ports sur le routeur de manière dynamique afin que les réponses et les requêtes puissent toujours passer. Le hacker devra dès lors sonder tous les ports du serveur s'il veut espérer pouvoir trouver le bon port et faire son attaque.
 
 \subsection*{3. Qu’est-ce que la configuration de views BIND ?}
 Permets de présenter une configuration du serveur DNS selon la provenance de la requête. Certains périphériques auront accès à une version et d'autres à une tout autre configuration.\cite{views}\\
+
+Permets par exemple de proposer une configuration du DNS différente pour les périphériques qui viennent de l'extérieur du réseau à ceux qui se trouvent à l'intérieur d'un sous-réseau.
 
 \subsection*{4. Comparez les protocoles de routage interne OSPF et RIPv2}
 OSPF\cite{OSPF} se base sur la rapidité d'un chemin alors que RIP\cite{RIP} fonctionne avec les "hop count". OSPF envoie des messages "link-state advertisement" (lsa) qui contiennent la liste des routeurs atteignable par lui-même à tous ses voisins, propagé ensuite à tous les routeurs du réseau. Cet ensemble de LSA permet de connaître la structure du réseau. Chaque routeur utilisant finalement l'algorithme de Djikstra afin de trouver le chemin le plus court vers chaque réseau.\\
@@ -639,7 +633,6 @@ Ainsi, la résolution DNS standard nom vers adresse sera disponible du côté du
 La première limitation est la suivante, un CNAME\cite{CNAME} doit toujours pointer sur un autre nom domaine et jamais sur une adresse. La seconde est qu'aucun autre enregistrement ne doit redéfinir le label du CNAME! Il ne faut pas nom plus utiliser de CNAME pour la racine du domaine, mais plutôt utiliser un ALIAS\cite{ALIAS}.\\
 
 Un CNAME ne devrait en théorie pas pointer sur un autre CNAME, cela pourrait causer une boucle DNS non résolvable dans le cas ou les deux CNAME se pointent l'un l'autre.\cite{cname-limitations}\\
-
 
 \section{Conclusion}
 
