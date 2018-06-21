@@ -121,7 +121,7 @@
 
 \section{Introduction}
 	
-Dans le cadre d'un laboratoire du cours "Réseau et application", les services de base d'un réseau informatique sont mis en pratiques. Les protocoles à mettre en place sont le DHCP, DNS, serveur web et optionnellement le protocole NTP. La partie NTP a été réalisée. Le but principal est de créer un petit réseau, et ensuite 4 réseaux connectés, composés uniquement de machine GNU/Linux. Tout le laboratoire se fera sur NetKit, simulation d'environnement réseau virtuel.
+Dans le cadre d'un laboratoire du cours "Réseau et application", les services de base d'un réseau informatique sont mis en pratiques. Les protocoles à mettre en place sont le DHCP, DNS, serveur web et optionnellement le protocole NTP. La partie NTP a été réalisée. Le but principal est de créer un petit réseau avec un DHCP et DNS fonctionnel, ensuite ce réseau va être dupliquer et sera connecté à tout ses clones via un réseau backbone. Toutes les réseaux sont composés uniquement de machine GNU/Linux. Tout le laboratoire se fera sur NetKit, logiciel de simulation d'environnement réseau virtuel.
 
 \subsection{Prérequis}
 
@@ -129,12 +129,11 @@ Dans le cadre d'un laboratoire du cours "Réseau et application", les services d
 	\item Un PC Linux avec NetKit
 	\item Laboratoire netkit "qos"
 \end{itemize}
-Entrée TXT
 \subsection{Réseau du laboratoire}
 
 \subsubsection{Réseau initial}
 
-Le réseau est composé de deux PC, dont un qui est un serveur web, ainsi qu'un serveur qui fait office de DNS et de DHCP.\\
+Le réseau est composé de deux PC, dont un qui est un serveur web, ainsi qu'un serveur qui fait office de DNS et de DHCP. Les deux PC feront aussi office de serveur mail (uniquement dans les enregistrement DNS).\\
 
 Le nom du réseau est net1.mylan.ch.\\
 
@@ -142,10 +141,11 @@ Le nom du réseau est net1.mylan.ch.\\
 
 \subsubsection{Réseau final}
 
-L'objectif final est de dupliquer le premier réseau 3 fois et d'interconnecter les 4 sous-réseaux.\\
+L'objectif final est de dupliquer le premier réseau 3 fois et d'interconnecter les 4 sous-réseaux via un backbone pour qu'ils puissent communiquer entre eux.\\
 
 [Image réseau final]
 
+\clearpage
 
 \section{Déploiement d'un sous-réseau}
 
@@ -253,13 +253,15 @@ La configuration est la suivante :
 @	IN	MX	10	pc2.net1.mylan.ch.
 \end{lstlisting}
 
+\clearpage
+
 \subsubsection{Tests}
 
 \paragraph{DHCP dynamique}
 
 Sur la prise d'écran ci-dessous, on peut remarqué que pc2 a bien pris une adresse dans la plage 192.168.1.100/24 - 192.168.1.199/24. La machine ayant pris l'adresse 192.168.1.101. L'adresse 192.168.1.100 n'a pas été prise, car au moment du test, pc1 était aussi en adresse dynamique.
 
-\begin{figure}[h]
+\begin{figure}[!h]
 	\centering
 	\includegraphics{./captures/testpc2-dhcp.png}
 	\caption{Test DHCP dynamique}
@@ -270,16 +272,19 @@ Sur la prise d'écran ci-dessous, on peut remarqué que pc2 a bien pris une adre
 
 On a également testé l'adresse fixe pour pc1. Le tout étant fonctionnel :
 
-\begin{figure}[h]
+\begin{figure}[!h]
 	\centering
 	\includegraphics{./captures/7-testfixadress.png}
 	\caption{Test DHCP statique pour pc1}
 	\label{fig:Test DHCP statique pour pc1}
 \end{figure}
 
+\clearpage
+
+
 Le log du serveur DHCP a également été vérifié afin d'être sûr qu'il n'y ait pas d'erreur.
 
-\begin{figure}[h]
+\begin{figure}[!h]
 	\centering
 	\includegraphics{./captures/2-log-dhcp.png}
 	\caption{Log DHCP}
@@ -290,16 +295,16 @@ Le log du serveur DHCP a également été vérifié afin d'être sûr qu'il n'y 
 
 Sur l'image ci-dessous on peut voir que les entrées DNS de la zone et que le serveur DNS est bien configuré correctement.
 
-\begin{figure}[h]
+\begin{figure}[!h]
 	\centering
 	\includegraphics{./captures/1-testrouteur-dns1-pc2.png}
 	\caption{Test DNS serveur}
 	\label{fig:Test DNS serveur}
 \end{figure}
 
-Et sur l'image suivante que le l'alias pour le routeur est également fonctionnel.
+Et sur l'image suivante on peut voir que le l'alias pour le routeur est également fonctionnel.
 
-\begin{figure}[h]
+\begin{figure}[!h]
 	\centering
 	\includegraphics{./captures/alias-routeur.png}
 	\caption{Test alias}
@@ -308,7 +313,7 @@ Et sur l'image suivante que le l'alias pour le routeur est également fonctionne
 
 Les tests des entrées pour pc1 et pc2 ont également été faits et sont un succès comme on peut le constater sur l'image ci-dessous.
 
-\begin{figure}[h]
+\begin{figure}[!h]
 	\centering
 	\includegraphics{./captures/2-test-dns-pc1.png}
 	\caption{Test entré DNS PC}
@@ -321,7 +326,7 @@ L'image montre uniquement un test sur pc1, mais un test à également été fait
 
 Le serveur web a été testé avec la commande 'Lynx' comme énoncé dans le document du laboratoire et le test est aussi un succès. \cite{doc-labo}
 
-\begin{figure}[h]
+\begin{figure}[!h]
 	\centering
 	\includegraphics{./captures/ItWorks-www.png}
 	\caption{Serveur Web}
@@ -334,12 +339,14 @@ Le champ TXT est une simplement des informations textuelles sur le serveur. Ce c
 
 L'entrée générée ci-dessous contient un hash qui permet de vérifier l'authenticité du DNS.
 
-\begin{figure}[h]
+\begin{figure}[!h]
 	\centering
 	\includegraphics{./captures/txt-entry.png}
 	\caption{Entrée TXT}
 	\label{fig:Entrée TXT}
 \end{figure}
+
+\clearpage
 
 \section{Déploiement de 4 sous-réseaux}
 
@@ -347,7 +354,7 @@ L'étape suivante est de dupliquer le sous-réseau 3 fois et de les interconnect
 
 \subsection{Backbone}
 
-Le routage entre les différents sous-réseaux est fait avec Zebra, logiciel qui s'occupe de faire du routage TCP/IP \cite{Zebra}. Mais le logiciel semble ne plus être maintenu et a été remplacé par Quagga. Mais Zebra a quand même été utilisé car c'était le logiciel inclus dans le laboratoire.\\
+Le routage entre les différents sous-réseaux est fait avec Zebra, logiciel qui s'occupe de faire du routage TCP/IP \cite{Zebra}. Mais le logiciel semble ne plus être maintenu et a été remplacé/continué sous le nom Quagga, comme on peut le constater dans l'image à la fin de cette section.\\
 
 Afin d'ajouter Zebra à notre réseau, nous avons simplement ajouter la confirmation du document du laboratoire \cite{doc-labo}, celle-ci ne demandant pas d'adaptation.\\
 
@@ -355,7 +362,7 @@ Ensuite le réseau net1 a été dupliqué 3 fois grâce au script 'duplicate-sub
 
 Comme énoncé dans le document, on se connectant en SSH à Zebra, on peut voir des routes échangées (celles préfixée par R) et d'autre directe (préfixées par C)
 
-\begin{figure}[h]
+\begin{figure}[!h]
 	\centering
 	\includegraphics{./captures/zebra-check.png}
 	\caption{Zebra}
@@ -370,29 +377,31 @@ Le réseau final sera donc celui présenté dans l'introduction :
 
 Ensuite nous avons testé en faisant des pings depuis pc1 de net3 à une machine du réseau 1 et du réseau 2. Comme on peut le voir sur la prise d'écran ci-dessous, cela fonctionne correctement.
 
-\begin{figure}[h]
+\begin{figure}[!h]
 	\centering
 	\includegraphics{./captures/test-zebra-from-pc.png}
 	\caption{Tests backbone}
 	\label{fig:Tests backbone}
 \end{figure}
 
-On peut également voir qu'un ping est fait avec l'adresse IP et un autre avec le hostname. Ce qui valide également le test de fonctionnement DNS.
+On peut également voir qu'un ping est fait avec l'adresse IP et un autre avec le hostname. Ce qui valide également le test de fonctionnement DNS.\\
 
 Un traceroute a également été fait de pc1.net1 à pc1.net4. On peut voir que le paquet passe bien par les interfaces réseaux du backbone.
 
-\begin{figure}[h]
+\begin{figure}[!h]
 	\centering
 	\includegraphics{./captures/traceroutepc1-net4.png}
 	\caption{Traceroute}
 	\label{fig:Traceroute}
 \end{figure}
 
+\clearpage
+
 \subsection{Échanges RIP}
 
 Afin d'éviter les boucles de routages, les routeurs communiquent entre eux avec le protocole RIP \cite{RIP}. Nous avons vérifier cela en capturant les paquets RIP. Comme on peut le voir sur l'image ci-dessous :
 
-\begin{figure}[h]
+\begin{figure}[!h]
 	\centering
 	\includegraphics{./captures/rip.png}
 	\caption{RIP}
@@ -401,15 +410,94 @@ Afin d'éviter les boucles de routages, les routeurs communiquent entre eux avec
 
 Le protocole est RIPv2, qui est simplement la deuxième amélioration du protocole de base.
 
+\clearpage
 \section{Autres services}
 
 \subsection{DNS Slave}
 
+Un DNS Slave est un DNS qui va baser tout ses enregistrement sur un autre serveur DNS \cite{Slave}. Comme demander dans le document, le DNS du réseau 3 va devenir le DNS slave du réseau 2, qui sera donc son master. Pour cela il faut donc modifier la configuration du DNS du réseau 2 pour lui indiquer qu'il a un slave et également modifier la configuration du réseau 3 pour lui indiquer qu'il a un master.\\
+
+Pour cela il faut premièrement ajouter un enregistrement DNS au réseau 2 pour lui indiquer l'existence du serveur 3.
+
+\begin{lstlisting}
+dns	IN	A	192.168.3.1
+;et sa correspondance
+@	IN	NS	dns.net3.mylan.ch
+\end{lstlisting}
+
+Ensuite il faut indiquer au serveur 3 qu'il est un slave en ajoutant ces lignes après la ligne 'cat >> /etc/bind/named.conf.local <<EOF' : 
+
+\begin{lstlisting}
+zone "net2.mylan.ch" IN {
+	type slave;
+	masters { 192.168.2.1; };
+	file "/var/lib/bind/net2.mylan.ch.slave";
+};
+
+zone "2.168.192.in-addr.arpa" IN {
+	type slave;
+	masters { 192.168.2.1; };
+	file"/var/lib/bind/2.168.192.in-addr.arpa.slave";
+};
+\end{lstlisting}
+
+\subsubsection{Test}
+
+On a pu testé que le DNS 3 est bien le slave de DNS 2 en faisant la commande : 
+
+\begin{lstlisting}
+host -t ns net2.mylan.ch 192.168.0.1
+\end{lstlisting}
+
+et en répétant l'opération pour tous les sous-réseaux 192.168.0.X. On peut constater sur l'image ci-dessous que ça a bien fonctionné.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics{./captures/part1part3.png}
+	\caption{Test slave}
+	\label{fig:Test slave}
+\end{figure}
+
+
 \subsection{NTP}
 
-PTP text du cours:
-Le protocole PTP (Precision Time Protocol ), coupe a du support dans les équipements de commutation permettant de modifier les datagrammes couche 4 en transit (transparent clock) et d'y insérer des informations de délais effectifs, peut atteindre la précision requise, dans la mesure ou les délais peuvent être estimées symétriques et constants durant les fenêtres de synchronisation. Un des avantages du
-PTP est la possibilité, si les équipements de commutation le supportent (boundary clock), de pouvoir supporter la synchronisation en phase.
+NTP est un protocole de synchronisation de temps qui permet d'avoir une précision à quelques millisecondes près \cite{NTP}. Nous avons donc testé ce protocole en l'installant sur la machine debian. Le paquet n'étant pas présent dans le laboratoire netkit, nous n'avons pas pu testé tout ce qui était relatif à notre petit sous-réseau.\\
+
+Premièrement, il a fallu installer NTP avec la commande 'apt-get install ntp'.\\
+
+Ensuite il nous avons pu visualiser les strates avec la commande 'ntpq -p'. Les strates sont les serveurs de références sur le quels notre serveur va se synchroniser. Les strates sont organisés sous-forme d'arbre, ayant pour racine une horloge atomique.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics{./captures/ntp.png}
+	\caption{Strates}
+	\label{fig:Strates}
+\end{figure}
+
+\clearpage
+
+Les paquets de synchronisation ont également été capturés avec wireshark. On peut voir la deuxième prise d'écran les données utiles à l'heure, comme par exemple le délai avec la racine ou l'heure exacte.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics{./captures/ntp-capture.png}
+	\caption{NTP : Paquets de synchronisation (1)}
+	\label{fig:NTP : Paquets de synchronisation (1)}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics{./captures/ntp-capture2.png}
+	\caption{NTP : Paquets de synchronisation (2)}
+	\label{fig:NTP : Paquets de synchronisation (2)}
+\end{figure}
+
+\subsubsection{Amélioration précision NTP} 
+
+Si une précision à la milliseconde n'est pas suffisant, il existe un protocole le protocole PTP qui permet d'atteindre une précision à la nanoseconde \cite{PTP}. Mais ce protocole requiert des appareils le supportant. Car la plupart des machine ne permettent pas d'avoir une telle précision.
+
+
+\clearpage
 
 \section{Questions}
 
