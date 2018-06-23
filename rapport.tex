@@ -132,13 +132,22 @@ Le réseau est composé de deux PC, dont un qui est un serveur web, ainsi qu'un 
 
 Le nom du réseau est net1.mylan.ch.\\
 
-[Image sous-réseau]
+\begin{figure}[!h]
+	\centering
+	\includegraphics{./schemas/Schema-simple.png}
+	\caption{Log DHCP}
+	\label{fig:Log DHCP}
+\end{figure}
 
 \subsubsection{Réseau final}
 L'objectif final est de dupliquer le premier réseau 3 fois et d'interconnecter les 4 sous-réseaux via un backbone pour qu'ils puissent communiquer entre eux.\\
 
-[Image réseau final]
-
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\textwidth]{./schemas/Schema-complet.png}
+	\caption{Log DHCP}
+	\label{fig:Log DHCP}
+\end{figure}
 \clearpage
 
 \section{Déploiement d'un sous-réseau}
@@ -356,7 +365,14 @@ Comme énoncé dans le document, en se connectant en SSH à un routeur possédan
 
 Le réseau final sera donc celui présenté dans l'introduction : 
 
-[IMAGE]
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=\textwidth]{./schemas/Schema-complet.png}
+	\caption{Log DHCP}
+	\label{fig:Log DHCP}
+\end{figure}
+
+\clearpage
 
 \subsection{Tests}
 
@@ -635,6 +651,7 @@ La première limitation est la suivante, un CNAME\cite{CNAME} doit toujours poin
 Un CNAME ne devrait en théorie pas pointer sur un autre CNAME, cela pourrait causer une boucle DNS non résolvable dans le cas ou les deux CNAME se pointent l'un l'autre.\cite{cname-limitations}\\
 
 \section{Conclusion}
+\textbf{{\color{red} TODO}}
 
 \newpage
 \printbibliography
