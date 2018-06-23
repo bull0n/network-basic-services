@@ -352,7 +352,7 @@ Le routage entre les différents sous-réseaux est fait avec GNU Zebra, logiciel
 
 Afin d'ajouter Zebra à notre réseau, nous avons simplement ajouté la confirmation du document du laboratoire \cite{doc-labo}, celle-ci ne demandant pas d'adaptation.\\
 
-Ensuite le réseau net1 a été dupliqué 3 fois grâce au script 'duplicate-subnet.sh' fourni avec le laboratoire. Nous avons également testé que tous les sous-réseaux fonctionnent en faisant simplement des pings entre les machines.
+Ensuite, le réseau net1 a été dupliqué 3 fois grâce au script 'duplicate-subnet.sh' fourni avec le laboratoire. Nous avons également testé que tous les sous-réseaux fonctionnent en faisant simplement des pings entre les machines.
 
 Comme énoncé dans le document, en se connectant en SSH à un routeur possédant le deamon Zebra de configuré, on peut voir les routes échangées (celles préfixées par R) et d'autres directes (préfixées par C).
 
@@ -501,7 +501,7 @@ Si une précision à la milliseconde n'est pas suffisante, il existe un protocol
 \section{Questions}
 
 \subsection*{1. Quel est le rôle du mot clé authoritative dans la configuration du serveur DHCP ?}
-Le mot clé "Authoritative" va jouer un rôle lorsque le serveur recevra une requête auquel il ne peut répondre positivement par exemple une requête "DHCP Request" pour une addresse IP non disponible dans les adresses qu'il peut allouer. Dans le cas ou "Authoritative" est activé alors le serveur répondra avec un NACK. Dans l'autre cas le serveur ne répondra tout simplement pas, en assumant qu'un autre serveur autoritaire va répondre.\cite{authoritative}\\
+Le mot clé "Authoritative" va jouer un rôle lorsque le serveur recevra une requête auquel il ne peut répondre positivement par exemple une requête "DHCP Request" pour une adresse IP non disponible dans les adresses qu'il peut allouer. Dans le cas ou "Authoritative" est activé alors le serveur répondra avec un NACK. Dans l'autre cas, le serveur ne répondra tout simplement pas, en assumant qu'un autre serveur autoritaire va répondre.\cite{authoritative}\\
 
 \subsection*{2. Pour quelle raison aurait-on tendance à configurer une durée de bail DHCP courte (p.ex. 1h) ? Ou longue ? (p.ex. 1 semaine)}
 \begin{itemize}
@@ -543,7 +543,7 @@ Il y de nombreuses adresses IP qui s'affichent, la capture ci-dessous a été ro
 	\label{fig:Strates}
 \end{figure}
 
-Il y a plusieurs serveurs physiques qui répondent à ce nom (plusieurs entrées avec le même nom dans la résolution d'adresses directe DNS). Cette configuration permet la charge du traffic sur plusieurs serveurs. Dans le cas ou j'effectue plusieurs pings sur ce nom de domaine, j'obtiens à chaque fois une adresse différente.
+Il y a plusieurs serveurs physiques qui répondent à ce nom (plusieurs entrées avec le même nom dans la résolution d'adresses directe DNS). Cette configuration permet la charge du trafic sur plusieurs serveurs. Dans le cas où j'effectue plusieurs pings sur ce nom de domaine, j'obtiens à chaque fois une adresse différente.
 
 \begin{figure}[h]
 	\centering
@@ -574,7 +574,7 @@ Ce protocole n'est pas sûr et possède plusieurs problèmes de sécurité tel l
 Il existe une version sécurisée de ce protocole, DNSSEC qui est comme DNS, mais qui inclut du cryptage afin de valider l'authenticité des messages reçus. Cependant ce protocole ne permet pas de gérer la confidentialité.\cite{DNSSEC}
 
 \subsection*{15. Vous venez de configurer deux serveurs DNS pour la zone ```mondomaine.ch```, et ils sont associés à un registrar : expliquez ce que le registry 1 doit faire pour que cela fonctionne, techniquement (indication : ```whois alphanet.ch``` ; de plus, voir les entrées ```NS``` sur ```n1-routeur``` de ```mylan.ch``` vers les sous-domaines)}
-Définir les enregistrements DNS pour les serveurs qui en ont besoin tel que le serveur mail. Il s'agit de configurer des enregistrements de type A pour faire correspondre les hostname avec l'adresse IP et également des "PTR" afin de faire la conversion inverse(très important pour le serveur mail).
+Définir les enregistrements DNS pour les serveurs qui en ont besoin tels que le serveur mail. Il s'agit de configurer des enregistrements de type A pour faire correspondre les hostname avec l'adresse IP et également des "PTR" afin de faire la conversion inverse(très important pour le serveur mail).
 
 \subsection*{16. Pourquoi est-ce important d’avoir des champs PTR existants et cohérents ?}
 Les champs PTR permettent d'associer une adresse IP à un nom d'hôte. Un PTR correspond à un enregistrement inversé. Les champs PTR sont indispensables pour les serveurs de messageries par exemple.
@@ -651,9 +651,14 @@ La première limitation est la suivante, un CNAME\cite{CNAME} doit toujours poin
 Un CNAME ne devrait en théorie pas pointer sur un autre CNAME, cela pourrait causer une boucle DNS non résolvable dans le cas ou les deux CNAME se pointent l'un l'autre.\cite{cname-limitations}\\
 
 \section{Conclusion}
-\textbf{{\color{red} TODO}}
+Le but de ce laboratoire était de découvrir le fonctionnement et la configuration des services de base d'un réseau, en les mettant oeuvre avec NetKit.\\
+
+Ce laboratoire s’est déroulé sans problème particulier, toutes les parties à prouver ont été réalisées. Nous avons pu mettre en place et tester les services de bases du réseau que l'on a configuré tel que le DNS, DHCP, ... Toutes les questions ont été répondues et nous avons également effectué la partie supplémentaire sur le protocole NTP.\\
+
+Ce laboratoire nous a permis d'en apprendre un peu plus sur les systèmes Unix et de découvrir quelques-unes des nombreuses possibilités de configuration offertes par ces services de base omniprésents dans les réseaux que nous utilisons dans la vie de tous les jours.
 
 \newpage
 \printbibliography
 
 \end{document}
+
